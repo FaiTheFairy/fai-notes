@@ -36,8 +36,8 @@ I will be careful about units because the same symbols can mean "per mole," "per
 - Radius: $r$ in meters (m)
 - Surface energy (surface tension): $\gamma$ in J/m$^2$
 - Volumetric driving force: $\Delta g_v$ in J/m$^3$
-- Free energy of formation of a nucleus: $\Delta G_T(r)$ in Joules (J) per nucleus ($T$ notates 'Total')
-- Critical free energy of formation of a nucleus: $\Delta G_c$ in Joules(J) per nucleus ($c$ notates 'critical')
+- Free energy of formation of a nucleus: $\Delta G_T(r)$ in J/nucleus ($T$ notates 'Total')
+- Critical free energy of formation of a nucleus: $\Delta G_c$ in J/nucleus ($c$ notates 'critical')
 
 Sign convention:
 
@@ -52,7 +52,7 @@ Sign convention:
   $$
   \Delta \mu = k_B T \ln S
   $$
-where $\Delta \mu$ is the chemical potential difference per particle (J/particle) and $S$ is supersaturation ($\frac{c_0}{c_\text{eq}}$).
+where $\Delta \mu$ is the chemical potential difference (J/particle) and $S$ is supersaturation ($\frac{c_0}{c_\text{eq}}$).
   
 - Converting to a volumetric driving force we use the molecular volume $v_m$ (m$^3$/particle):
 
@@ -81,7 +81,12 @@ $$
 = \frac{4}{3}\pi r^3 \Delta g_v.
 $$
 
-This, however, doesn't tell the whole story; creating a surface requires energy. If $\gamma$ is the solid–liquid interfacial energy (J/m$^2$), (also referred to as surface tension) then the *surface* contribution is
+This, however, doesn't tell the whole story; creating a surface requires energy.
+
+> "God made the bulk; surfaces were invented by the devil."
+> —Wolfgang Pauli[@Brantley1999]
+
+If $\gamma$ is the solid–liquid interfacial energy (J/m$^2$), (also referred to as surface tension) then the *surface* contribution is
 
 $$
 \Delta G_{\text{s}}(r) = 4\pi r^2 \gamma.
@@ -508,10 +513,8 @@ def update(i):
 
 ani = FuncAnimation(fig, update, frames=len(thetas), interval=30, blit=True)
 
-# MP4 output (best for Quarto HTML)
 ani.save("homo_hetero.mp4", fps=30, dpi=150)
 plt.close(fig)
-
 
 Video("homo_hetero.mp4", embed=False, html_attributes='autoplay loop muted playsinline style="max-width: 100%;"')
 ```

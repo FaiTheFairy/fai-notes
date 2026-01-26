@@ -1,6 +1,6 @@
 # Fdb version 4
-["lualatex"] 1769383258.51234 "/home/fai/quarto/nanoparticle-synthesis/posts/nucleation/references.bib" "references.pdf" "references" 1769383259.05505 2
-  "/home/fai/quarto/nanoparticle-synthesis/posts/nucleation/references.bib" 1769383258.39792 2246 52da9d16a0a275ed2bfaa72dfdac2985 ""
+["lualatex"] 1769459897.98408 "/home/fai/fai-notes/posts/nanoparticle-synthesis/classical-nucleation-theory/references.bib" "references.pdf" "references" 1769459898.5766 2
+  "/home/fai/fai-notes/posts/nanoparticle-synthesis/classical-nucleation-theory/references.bib" 1769459897.84242 1902 3ec4efeec9aa424109817dd7462a9df7 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmex10.tfm" 1136768653 992 662f679a0b3d2d53c1b94050fdaa3f50 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm" 1136768653 1528 abec98dbc43e172678c11b3b9031252a ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi5.tfm" 1136768653 1508 3b32edd0d68f6498a5a375e78f9edc5e ""
@@ -57,9 +57,11 @@
   "/usr/share/texlive/texmf-dist/tex/luatex/luaotfload/luaotfload-tounicode.lua" 1740687098 7529 21fe79d2526f3c3d789a9cc0366347ab ""
   "/usr/share/texlive/texmf-dist/tex/luatex/luaotfload/luaotfload-unicode.lua" 1740687098 7918 4272855a25780b80472f3b58edd95e33 ""
   "/usr/share/texlive/texmf-dist/tex/luatex/luaotfload/luaotfload.lua" 1740687098 13566 16df94dd2de231b2bca0aaa0190941fe ""
+  "/usr/share/texmf/fonts/tfm/public/lm/rm-lmr10.tfm" 1254269338 11868 4f81e9b6033c032bdaf9884f4d7ef412 ""
+  "/usr/share/texmf/tex/latex/lm/ot1lmr.fd" 1616454256 1882 28c08db1407ebff35a658fd141753d16 ""
   "/var/lib/texmf/web2c/luahbtex/lualatex.fmt" 1759173670 5712758 d3a20a551d55e098fe7b40021c169c99 ""
-  "references.aux" 1769381040.8014 32 3985256e7290058c681f74d7a3565a19 "lualatex"
-  "references.bib" 1769383258.39792 2246 52da9d16a0a275ed2bfaa72dfdac2985 ""
+  "references.aux" 1769386532.51814 32 3985256e7290058c681f74d7a3565a19 "lualatex"
+  "references.bib" 1769459897.84242 1902 3ec4efeec9aa424109817dd7462a9df7 ""
   (generated)
   "references.aux"
   "references.log"
