@@ -92,8 +92,10 @@ This value is never negative as it always takes energy to create an interface.
 Now, the total free energy of forming a nucleus can be described as
 
 $$
-\Delta G_T(r) = \Delta G_V(r) + \Delta G_S(r)
-= \frac{4}{3}\pi r^3 \Delta g_v + 4\pi r^2 \gamma.
+\begin{align*}
+    \Delta G_T(r) &= \Delta G_V(r) + \Delta G_S(r) \\
+    &= \frac{4}{3}\pi r^3 \Delta g_v + 4\pi r^2 \gamma.
+\end{align*}
 $$
 
 For small $r$, the surface term dominates and $\Delta G(r)$ increases with size. For sufficiently large $r$, the bulk term dominates and $\Delta G(r)$ decreases with size. This competition produces a maximum in $\Delta G(r)$, which is the *nucleation barrier*, shown in @fig-bulk-surface.
@@ -179,14 +181,15 @@ $$
 = 4\pi r^2 \Delta g_v + 8\pi r \gamma.
 $$
 
-Set equal to zero and solve for $r \neq 0$:
+Set equal to zero and solve for $r$ <!-- \neq 0$ -->:
 $$
-4\pi r_c^2 \Delta g_v + 8\pi r_c \gamma = 0
-\quad\Rightarrow\quad
-r_c = \frac{2\gamma}{|\Delta g_v|}.
+\begin{align*}
+    4\pi r_c^2 \Delta g_v + 8\pi r_c \gamma &= 0 \\
+    \Rightarrow r_c &= \frac{2\gamma}{\lvert\Delta g_v\rvert}.
+\end{align*}
 $$
 
-Clusters smaller than $r_c$ tend to shrink because doing so lowers the free energy. Clusters larger than $r_c$ tend to grow, since further growth reduces the free energy even though $\Delta G(r)$ may still be positive. 
+Clusters smaller than $r_c$ tend to shrink because doing so lowers the free energy. Clusters larger than $r_c$ tend to grow, since further growth reduces the free energy, even though $\Delta G(r)$ may still be positive. 
 
 The critical radius is of particular importance because it determines the kinetic limitation of nucleation: only clusters that grow large enough to surpass the free energy barrier at $r_c$ are likely to continue growing.
 
@@ -217,7 +220,11 @@ $$
 By approximating $\Delta h_v \approx \Delta h_{f,v}$ and $\Delta s_v \approx \Delta s_{f,v}$, we get
 
 $$
-\Delta g_v \approx  \Delta h_{f, v} - T\Delta s_{f,v} = \Delta h_{f,v} - \frac{T\Delta h_{f,v}}{T_f} = \Delta h_{f,v} \frac{T_f - T}{T_f}
+\begin{align*}
+    \Delta g_v &\approx  \Delta h_{f, v} - T\Delta s_{f,v} \\[1em]
+    &= \Delta h_{f,v} - \frac{T\Delta h_{f,v}}{T_f} \\[1em]
+    &= \Delta h_{f,v} \frac{T_f - T}{T_f}
+\end{align*}
 $$
 
 So,
@@ -226,7 +233,7 @@ $$
 \Delta g_v = \frac{\Delta h_f}{T_f}\Delta T,
 $$
 
-where $\Delta h_f$ is the enthalpy of fusion per unit volume (J/m$^3$) and $\Delta T = T - T_f$ (negative below $T_f$). This approximation is valid for $|\Delta T| \ll T_f$.
+where $\Delta h_f$ is the enthalpy of fusion per unit volume (J/m$^3$) and $\Delta T = T - T_f$ (negative below $T_f$). This approximation is valid for $\lvert\Delta T\rvert \ll T_f$.
 
 Substituting into the critical radius gives:
 
@@ -250,7 +257,7 @@ $$
 \Delta \mu = k_B T \ln S \quad \text{(per particle)}.
 $$
 
-Converting to a volumetric driving force using the molecular volume $v_m$ (m$^3$/particle):
+Converting to a volumetric driving force using the molecular volume $v_m$:
 
 $$
 \Delta g_v = -\frac{\Delta \mu}{v_m} = -\frac{k_B T}{v_m}\ln S.
@@ -421,8 +428,11 @@ $$
 In heterogeneous nucleation, the barrier height is reduced relative to homogeneous nucleation by a geometric factor $f(\theta)$ that depends on the contact angle $\theta$:
 
 $$
-\Delta G_{c,\text{hetero}} = f(\theta)\,\Delta G_{c,\text{homo}},
-\qquad 0 \le f(\theta) \le 1.
+\Delta G_{c,\text{hetero}} = f(\theta)\,\Delta G_{c,\text{homo}}
+$$
+where
+$$
+0 \le f(\theta) \le 1, \qquad 0\degree \le \theta \le 180\degree
 $$
 
 

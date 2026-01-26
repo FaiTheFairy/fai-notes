@@ -5,6 +5,7 @@ project:
 
 website:
   title: "Fai's Notes"
+  open-graph: true
   navbar:
     left:
       # - href: index.qmd
