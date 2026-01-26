@@ -1,0 +1,9 @@
+---
+title: Nanoparticle Synthesis
+---
+
+## Week 1: Classical Nucleation Theory
+
+Introduction to CNT, the LaMer model, and heterogeneous nucleation.
+
+[Read Week 1](classical-nucleation-theory/)

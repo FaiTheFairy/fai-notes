@@ -1,0 +1,42 @@
+project:
+  type: website
+  resources:
+    - "posts/**/*.mp4"
+
+website:
+  title: "Fai's Notes"
+  navbar:
+    left:
+      # - href: index.qmd
+      #   text: Home
+      - href: posts/nanoparticle-synthesis
+        text: Nanoparticle Synthesis
+      - about.qmd
+    right:
+      - icon: envelope
+        href: "mailto:me@faithefairy.com"
+      - icon: github
+        href: "https://github.com/faithefairy"
+
+  page-footer:
+    center: "Fai &copy; <script>document.write(new Date().getFullYear())</script>"
+
+format:
+  html:
+    theme:
+      light: flatly
+      dark: darkly
+    css: styles.css
+    toc: true
+    html-math-method: katex
+
+# author:
+  # name: "Fai"
+  # affiliation: "Chemical Engineering Student"
+  # email: "me@faithefairy.com"
+  # interests:
+  #   - Computational modeling
+  #   - Scientific visualization
+  #   - Process design
+  #   - Self-hosting
+

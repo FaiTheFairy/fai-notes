@@ -1,0 +1,9 @@
+---
+title: "About"
+---
+
+Hello, my name is Fai. I’m a chemical engineering student currently taking a course on nanoparticle synthesis. This site is a place for me to document concepts taught in class, explore them more deeply, and refresh my programming skills along the way.
+
+My workflow usually starts with reviewing class notes and sketching out ideas that I find interesting or worth expanding on. I then prototype figures, simulations, or explanations using IPython in Jupyter notebooks. Once I’m happy with the results, I convert the notebooks to Quarto (`.qmd`) files and publish them here.
+
+Reproducibility is an important part of how I work; most figures and animations are generated directly from code rather than added manually. Posts are written as I learn, and may evolve over time as my understanding improves. Everything here is intended to be both a personal reference and a resource that other students might find useful.
