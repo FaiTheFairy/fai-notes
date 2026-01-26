@@ -30,6 +30,7 @@ format:
     css: styles.css
     toc: true
     html-math-method: katex
+    respect-user-color-scheme: true
 
 # author:
   # name: "Fai"
