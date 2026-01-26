@@ -1,21 +1,43 @@
-# Python-generated files
-__pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
+# Whitelist gitignore
 
-# Virtual environments
-.venv
+# ignore everything
+*
 
-/.quarto/
-**/*.quarto_ipynb
+# allow directories
+!*/
+
+# root
+!.gitignore
+!.python-version
+
+# github workflows
+!.github/**
 
 
-# Quarto
+# quarto and content files
+!**/*.qmd
+!**/*.md
+!**/*.yml
+!**/*.yaml
+
+
+# citations
+!**/*.csl
+!**/*.bib
+
+# metadata
+!**/*.toml
+!**/*.lock
+
+# styles
+!**/*.css
+
+# assets
+!**/assets/**
+
+
+# don't track Quarto output.
+# if this is omitted, the css bypasses it
+# inserted last as that's how gitignore evaluates priority
 _site/
 _freeze/
-
-# jupyter
-.ipynb_checkpoints/
