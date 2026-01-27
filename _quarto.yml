@@ -6,10 +6,13 @@ project:
 website:
   title: "Fai's Notes"
   open-graph: true
+  repo-url: https:/github.com/faithefairy/fai-notes
   navbar:
     left:
       # - href: index.qmd
       #   text: Home
+      - href: posts/fluid-mechanics
+        text: Fluid Mechanics
       - href: posts/nanoparticle-synthesis
         text: Nanoparticle Synthesis
       - about.qmd
@@ -31,14 +34,9 @@ format:
     toc: true
     html-math-method: katex
     respect-user-color-scheme: true
+    code-fold: true
+    code-tools:
+      toggle: true
+      source: repo
 
-# author:
-  # name: "Fai"
-  # affiliation: "Chemical Engineering Student"
-  # email: "me@faithefairy.com"
-  # interests:
-  #   - Computational modeling
-  #   - Scientific visualization
-  #   - Process design
-  #   - Self-hosting
 

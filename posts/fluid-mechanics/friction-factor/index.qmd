@@ -1,0 +1,214 @@
+---
+title: 'Friction Factor: Moody’s Diagram for Smooth and Rough Pipes'
+jupyter:
+  jupytext:
+    formats: ipynb,py:percent
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
+
+When fluid flows through a pipe or channel, friction factor calculates the resistance that fluid faces due to factors like surface roughness or flow velocity which impacts the pressure drop and energy efficiency.  Moody’s Diagram are the important tool to determine the friction factor in both smooth and rough pipes.
+
+Smooth pipes, like those made of glass or plastic, have lower friction factors due to lesser surface irregularities, while rough pipes, such as those made of cast iron, have higher friction factors due to higher surface roughness.
+
+## Friction Factor – Introduction
+The friction factor $f$ also known as Darcy-Weisbach Friction Factor is a dimensionless quantity that represents the frictional resistance or energy loss due to shear forces between fluid layers as the fluid flows through a pipe or channel.
+
+There is another form of friction factor known as Fanning Friction Factor ($f_F$) which is 1/4th of the Darcy friction factor ($f_F=\frac{f}{4}$) used in different industries.
+
+Friction Factor depends on the Reynolds number (Re) and the relative roughness of the pipe. Applicable equation and ranges are shown in table given below:
+
+
+| **Flow Type**       | **Reynolds Number (Re)**      | **Pipe Type**         | **Equation Used**                                        |
+|---------------------|-------------------------------|-----------------------|----------------------------------------------------------|
+| Laminar Flow        | Re < 2000                     | Smooth & Rough        | $f = \frac{\text{Re}}{64}$                                      |
+| Turbulent Flow      | 2000 < Re < 4000              | Smooth & Rough        | Unpredictable (transitional region)                      |
+| Turbulent Flow      | 4000 < Re < 100,000           | Smooth Pipe           | Blasius Equation $f = 0.079 \text{Re}^{-0.25}$            |
+| Turbulent Flow      | Re > 4000                     | Rough Pipe            | Colebrook-White Equation                                 |
+
+## Colebrook-White Equation
+
+The Colebrook-White equation is an empirical formula used to determine the Darcy-Weisbach friction factor ($f$) for turbulent flow in a pipe. The equation is implicit and cannot be solved algebraically for $f$, therefore requires iterative methods or numerical solution.
+
+Colebrook-White equation combines both the effect of pipe roughness and the Reynolds number on friction losses and written as:
+
+$$ \frac{1}{\sqrt{f}} = -2 \log{\left(\frac{\epsilon \, / d}{3.7} + \frac{2.51}{Re\sqrt{f}}\right)} $$
+
+
+where:
+
+- $f$ is the Darcy-Weisbach friction factor (dimensionless),
+$\epsilon \, /d$ is the relative roughness represents the roughness of the pipe’s surface relative to its diameter.
+- $D$ is the pipe diameter (m),
+- $Re$ is the Reynolds number (dimensionless),
+- log is the logarithm to base 10.
+
+::: {.callout-note}
+
+- The Colebrook-White equation is applicable for turbulent flow (Re > 4000) in both smooth and rough pipes.
+- The Moody’s diagram or Moody’s chart uses the Colebrook-White equation for turbulent flow.    
+
+:::
+
+Here are common values of roughness:
+
+| Pipe Material                          | Roughness ($\epsilon$) (mm) |
+|----------------------------------------|-----------------------------|
+| Glass, Brass, Copper, Lead (Smooth)    | Smooth (Negligible)         |
+| Steel, Wrought Iron                    | 0.045                       |
+| Asphalted Cast Iron                    | 0.12                        |
+| Galvanized Iron                        | 0.15                        |
+| Cast Iron                              | 0.26                        |
+| Concrete                               | 0.30 to 3.0                 |
+| Riveted Steel                          | 0.90 to 9.0                 |
+
+## Blaisus Equation
+The Blasius equation is an empirical formula used to estimate the friction factor in smooth pipes for turbulent flow. The correlation is written as:
+
+$$ f=0.0791\text{Re}^{0.25} $$
+
+where:
+
+- $f$ is the Darcy-Weisbach friction factor (dimensionless),
+- Re is the Reynolds number (dimensionless).
+
+::: {.callout-note}
+
+- The blasius equation is only applicable to smooth pipes and for Reynolds numbers between 4,000 and 100,000.
+- The blasius equation is a simplified case of the Colebrook-White equation.
+
+:::
+
+## Moody's Diagram / Moody's Chart
+The Moody diagram (or Moody chart) is a log - log plot between three variables Reynolds Number, Relative Roughness and Friction Factor. This diagram is useful in fluid mechanics to determine the for flow in a pipe.
+
+Moody’s Diagram is a graphical tool used in fluid mechanics to determine the Darcy-Weisbach friction factor ($f$), which is essential in calculating the pressure drop or head loss due to friction in pipe flow.
+
+```{python}
+#| lines_to_next_cell: 2
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import fsolve
+from IPython.display import SVG
+
+# colebrook-white equation for turbulent flow
+def colebrook(f, Re, e_d):
+    return 1 / np.sqrt(f) + 2.0 * np.log10((e_d / 3.7) + (2.51 / (Re * np.sqrt(f))))
+
+# calculate friction factor for laminar flow
+def friction_laminar(Re):
+    return 64 / Re
+
+# solve for friction factor using the Colebrook-White equation for turbulent flow
+def friction_turbulent(Re, e_d):
+    f_initial_guess = 0.01  # Initial guess for f
+    f_solution, = fsolve(colebrook, f_initial_guess, args=(Re, e_d))
+    return f_solution
+
+# generate data for plotting
+def generate_moody_data():
+    # reynolds number
+    Re = np.logspace(2.7, 8, num=500)
+    # relative roughness
+    e_d_values = [1e-7, 1e-6, 5e-6, 1e-5, 5e-5, 1e-4, 5e-4, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05]
+
+    fig, ax = plt.subplots(figsize=(12, 8))
+
+    # plot laminar flow curve
+    f_laminar = friction_laminar(Re[Re < 2000])
+    ax.plot(Re[Re < 2000], f_laminar, label='Laminar ($f = 64 / Re$)', color='black', linewidth=2)
+
+    # plot turbulent flow curves for each relative roughness value
+    for e_d in e_d_values:
+        f_turbulent = np.array([friction_turbulent(Re_i, e_d) if Re_i >= 4000 else np.nan for Re_i in Re])
+        ax.plot(Re, f_turbulent, label=f"$\\epsilon/D = {e_d}$")
+        # label each curve
+        idx_label = np.where(~np.isnan(f_turbulent))[0][-1]  # Get the last valid point on the curve
+        ax.text(Re[idx_label], f_turbulent[idx_label], f"$\\epsilon/D = {e_d}$", fontsize=8, ha='left', va='center')
+
+    # customize plot
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.set_xlabel('Reynolds Number ($Re$)', fontsize=14)
+    ax.set_ylabel('Darcy-Weisbach Friction Factor ($f$)', fontsize=14)
+    ax.set_title("Moody Diagram", fontsize=16)
+    ax.grid(True, which="both", linestyle='--', linewidth=0.5)
+
+    # highlight regions
+    ax.axvspan(500, 2000, facecolor='lightgray', alpha=0.5)
+    ax.axvspan(2000, 4000, facecolor='lightblue', alpha=0.3)
+    ax.axvspan(4000, 1e8, facecolor='lightgreen', alpha=0.3)
+
+    # annotate regions
+    ax.text(800, 0.01, 'Laminar', fontsize=10, va='center', ha='center')
+    ax.text(3000, 0.01, 'Transition', fontsize=10, va='center', ha='center')
+    ax.text(1e5, 0.01, 'Turbulent', fontsize=10, va='center', ha='center')
+
+    # axes limits
+    ax.set_xlim(500, 1e8)
+    ax.set_ylim(0.006, 0.1)
+
+    fig.savefig("moody_chart.svg")
+    plt.close(fig)
+
+generate_moody_data()
+
+SVG("moody_chart.svg")
+```
+
+To understand the Moody’s diagram the graph is plotted for three different regimes of Reynolds Number i.e Laminar Flow, Transitional Flow or Turbulent Flow.
+
+| Flow Region                  | Condition          | Description                                                                             |
+|--------------------------    |--------------------|-------------                                                                                                                                       |
+| **Laminar Flow**             | Re < 2,300         | The flow is laminar, and the friction factor is calculated using $f = \frac{64}{\text{Re}}$. This region is shown by a straight line on the chart. |
+| **Turbulent Flow**           | Re > 4,000         | The flow becomes turbulent, and the friction factor depends on both the Reynolds number and the relative roughness $\epsilon\, / D$.               |
+| **Turbulent – Smooth Pipes** | Re > 4,000         | For smooth pipes (low relative roughness), the friction factor decreases as the Reynolds number increases.                                         |
+| **Turbulent – Rough Pipes**  | Re > 4,000         | For rough pipes (higher $\epsilon\, / D$), the friction factor levels off and becomes independent of the Reynolds number at high values.           |
+| **Transition Flow**          | 2,300 < Re < 4,000 | The transition zone is where the flow characteristics are unpredictable, and the friction factor changes fastly.                                   |
+
+## Examples
+
+### 1. Maximum Volume of Flow Achievable
+
+**In a laboratory, the water supply is drawn from a roof storage tank 25 m above the water discharge point. If the friction factor is 0.008, the pipe diameter is 5 cm and the pipe is assumed vertical, calculate the maximum volume of flow achievable, if separation losses are ignored.**
+
+Given:
+
+- Head of water available, $H$ = 25 m
+- Diameter of pipe, $D$ = 5 cm = 0.05 m
+- Friction factor for the pipe, $f$ = 0.008
+- Length of the pipe, $L$ = 25 m
+- $g$ = 9.81 m/s2
+- first, calculating the cross-sectional area of the pipe, $A$ is:
+
+$$ A=\frac{\pi D^2}{4}=\frac{\pi(0.05)^2}{4} $$
+
+$$ A=1.964286 \times 10^{−3} \text{m$^2$} $$
+
+Head lost due to pipe friction, $h_f$ is:
+
+$$ h_f=H=25\text{m} $$
+
+Using the Darcy-Weisbach equation for head loss due to pipe friction:
+
+$$ h_ f=\frac{fLV^2}{2gD} $$
+
+Substituting the given values:
+
+$$ 25=\frac{0.008 \cdot 25 \cdot V^2}{2 \cdot 9.81 \cdot 0.05} $$
+
+solving for $V$, we get
+
+$$V^2=5.53 \text{m/s} $$
+
+Now, calculating the flow rate, $Q$
+
+$$ Q=A \cdot V = 1.964286 \times 10^{−3} \cdot 5.53 $$
+
+
+$$ Q=0.010876 \text{m$^3$/s} $$
+
+Thus, the maximum volume of flow achievable is approximately $0.010876 \, \text{m$^3$/s}$.
+

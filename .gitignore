@@ -41,3 +41,6 @@
 # inserted last as that's how gitignore evaluates priority
 _site/
 _freeze/
+
+/.quarto/
+**/*.quarto_ipynb
