@@ -23,7 +23,7 @@ Friction Factor depends on the Reynolds number (Re) and the relative roughness o
 
 | **Flow Type**       | **Reynolds Number (Re)**      | **Pipe Type**         | **Equation Used**                                        |
 |---------------------|-------------------------------|-----------------------|----------------------------------------------------------|
-| Laminar Flow        | Re < 2000                     | Smooth & Rough        | $f = \frac{\text{Re}}{64}$                                      |
+| Laminar Flow        | Re < 2000                     | Smooth & Rough        | $f = \frac{64}{\text{Re}}$                                      |
 | Turbulent Flow      | 2000 < Re < 4000              | Smooth & Rough        | Unpredictable (transitional region)                      |
 | Turbulent Flow      | 4000 < Re < 100,000           | Smooth Pipe           | Blasius Equation $f = 0.079 \text{Re}^{-0.25}$            |
 | Turbulent Flow      | Re > 4000                     | Rough Pipe            | Colebrook-White Equation                                 |
@@ -67,7 +67,7 @@ Here are common values of roughness:
 ## Blaisus Equation
 The Blasius equation is an empirical formula used to estimate the friction factor in smooth pipes for turbulent flow. The correlation is written as:
 
-$$ f=0.0791\text{Re}^{0.25} $$
+$$ f=0.0791\text{Re}^{-0.25} $$
 
 where:
 
@@ -172,43 +172,73 @@ To understand the Moody’s diagram the graph is plotted for three different reg
 
 ### 1. Maximum Volume of Flow Achievable
 
-**In a laboratory, the water supply is drawn from a roof storage tank 25 m above the water discharge point. If the friction factor is 0.008, the pipe diameter is 5 cm and the pipe is assumed vertical, calculate the maximum volume of flow achievable, if separation losses are ignored.**
+**In a laboratory, the water supply is drawn from a roof storage tank 20 m above the water discharge point. If the friction factor is 0.008, the pipe diameter is 5 cm and the pipe is assumed vertical, calculate the maximum volume of flow achievable, if separation losses are ignored.**
 
 Given:
 
-- Head of water available, $H$ = 25 m
-- Diameter of pipe, $D$ = 5 cm = 0.05 m
-- Friction factor for the pipe, $f$ = 0.008
-- Length of the pipe, $L$ = 25 m
-- $g$ = 9.81 m/s2
-- first, calculating the cross-sectional area of the pipe, $A$ is:
+- Head of water available, $H$ = 20 m  
+- Diameter of pipe, $D$ = 5 cm = 0.05 m  
+- Friction factor for the pipe, $f$ = 0.008  
+- Length of the pipe, $L$ = 20 m  
+- $g$ = 9.81 m/s$^2$  
 
-$$ A=\frac{\pi D^2}{4}=\frac{\pi(0.05)^2}{4} $$
+First, calculating the cross-sectional area of the pipe, $A$:
 
-$$ A=1.964286 \times 10^{−3} \text{m$^2$} $$
+$$
+A = \frac{\pi D^2}{4} = \frac{\pi (0.05)^2}{4}
+$$
 
-Head lost due to pipe friction, $h_f$ is:
+$$
+A = 1.964286 \times 10^{-3} \, \text{m}^2
+$$
 
-$$ h_f=H=25\text{m} $$
+For flow from a large tank to atmosphere, the available head is used to overcome both the exit velocity head and the frictional head loss. Applying Bernoulli’s equation:
 
-Using the Darcy-Weisbach equation for head loss due to pipe friction:
+$$
+H = \frac{V^2}{2g} + h_f
+$$
 
-$$ h_ f=\frac{fLV^2}{2gD} $$
+Using the Darcy–Weisbach equation for head loss due to pipe friction:
+
+$$
+h_f = \frac{f L V^2}{2 g D}
+$$
+
+Substituting into Bernoulli’s equation:
+
+$$
+H = \left(1 + \frac{fL}{D}\right)\frac{V^2}{2g}
+$$
 
 Substituting the given values:
 
-$$ 25=\frac{0.008 \cdot 25 \cdot V^2}{2 \cdot 9.81 \cdot 0.05} $$
+$$
+20 = \left(1 + \frac{0.008 \cdot 20}{0.05}\right)\frac{V^2}{2 \cdot 9.81}
+$$
 
-solving for $V$, we get
+$$
+20 = 4.2 \cdot \frac{V^2}{19.62}
+$$
 
-$$V^2=5.53 \text{m/s} $$
+Solving for $V$:
 
-Now, calculating the flow rate, $Q$
+$$
+V^2 = 93.43
+$$
 
-$$ Q=A \cdot V = 1.964286 \times 10^{−3} \cdot 5.53 $$
+$$
+V = 9.67 \, \text{m/s}
+$$
 
+Now, calculating the flow rate, $Q$:
 
-$$ Q=0.010876 \text{m$^3$/s} $$
+$$
+Q = A \cdot V = (1.964286 \times 10^{-3})(9.67)
+$$
 
-Thus, the maximum volume of flow achievable is approximately $0.010876 \, \text{m$^3$/s}$.
+$$
+Q = 0.01899 \, \text{m}^3/\text{s}
+$$
 
+Thus, the maximum volume of flow achievable is approximately  
+$\boxed{0.019 \, \text{m}^3/\text{s}}$.
