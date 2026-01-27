@@ -421,7 +421,7 @@ SVG(filename="delta_g_sensitivity.svg")
 In many real syntheses, nucleation occurs on container walls, impurities, seeds, or other surfaces (i.e., heterogenously).
 
 ::: {#fig-contact-angle fig-cap="Schematic of a liquid drop showing the quantities in the Young equation. Image adapted from *Joris Gillis~commonswiki* (CC0), via Wikimedia Commons."}
-![Contact Angle](assets/contact_angle.svg)
+![Contact Angle](https://upload.wikimedia.org/wikipedia/commons/e/e4/Contact_angle.svg)
 :::
 
 The contact angle, $\theta$, is the angle formed where a liquid meets a solid surface. More precisely, it’s measured between the tangent to the liquid–vapor interface and the tangent to the solid–liquid interface at the point where they intersect. This angle is used to describe how well a liquid wets a solid surface and is related to the interfacial tensions through the Young equation, which describes mechanical equilibrium at the three-phase contact line.
