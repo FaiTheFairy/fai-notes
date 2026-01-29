@@ -34,14 +34,14 @@ Historically, the nucleation step in the LaMer model was formulated using *class
 I will be careful about units because the same symbols can mean "per mole," "per particle," or "per volume" in different sources. The following conventions are used:
 
 - Radius: $r$ in meters (m)
-- Surface energy (surface tension): $\gamma$ in J/m$^2$
+- Surface energy (interfacial energy): $\gamma$ in J/m$^2$
 - Volumetric driving force: $\Delta g_v$ in J/m$^3$
-- Free energy of formation of a nucleus: $\Delta G_T(r)$ in J/nucleus ($T$ notates 'Total')
-- Critical free energy of formation of a nucleus: $\Delta G_c$ in J/nucleus ($c$ notates 'critical')
+- Free energy of formation of a nucleus: $\Delta G_T(r)$ in J/nucleus ($T$ denotes 'Total')
+- Critical free energy of formation of a nucleus: $\Delta G_c$ in J/nucleus ($c$ denotes 'critical')
 
 Sign convention:
 
-- $\Delta g_v = g_s - g_l$ is the solid–liquid Gibbs free energy difference per unit volume.
+- $\Delta g_v = g_{v,s} - g_{v,l}$ is the solid–liquid Gibbs free energy difference per unit volume.
 - For nucleation to be thermodynamically favored, the solid must be more stable than the liquid, so
   $$
   \Delta g_v < 0.
@@ -74,10 +74,10 @@ $$
 V = \frac{4}{3}\pi r^3.
 $$
 
-Let $g_s$ and $g_l$ denote the Gibbs free energy per unit volume of solid and liquid, respectively (J/m$^3$). The *bulk (volume)* contribution is
+Let $g_{v,s}$ and $g_{v,l}$ denote the Gibbs free energy per unit volume of solid and liquid, respectively (J/m$^3$). The *bulk (volume)* contribution is
 
 $$
-\Delta G_V(r) = \frac{4}{3}\pi r^3 (g_s - g_l)
+\Delta G_V(r) = \frac{4}{3}\pi r^3 (g_{v,s} - g_{v,l})
 = \frac{4}{3}\pi r^3 \Delta g_v.
 $$
 
@@ -86,10 +86,10 @@ This, however, doesn't tell the whole story; creating a surface requires energy.
 > "God made the bulk; surfaces were invented by the devil."
 > —Wolfgang Pauli[@Brantley1999]
 
-If $\gamma$ is the solid–liquid interfacial energy (J/m$^2$), (also referred to as surface tension) then the *surface* contribution is
+If $\gamma$ is the solid–liquid interfacial energy (J/m$^2$), (also referred to as interfacial energy) then the *surface* contribution is
 
 $$
-\Delta G_{\text{s}}(r) = 4\pi r^2 \gamma.
+\Delta G_{S}(r) = 4\pi r^2 \gamma.
 $$
 
 This value is never negative as it always takes energy to create an interface.
@@ -103,7 +103,7 @@ $$
 \end{align*}
 $$
 
-For small $r$, the surface term dominates and $\Delta G(r)$ increases with size. For sufficiently large $r$, the bulk term dominates and $\Delta G(r)$ decreases with size. This competition produces a maximum in $\Delta G(r)$, which is the *nucleation barrier*, shown in @fig-bulk-surface.
+For small $r$, the surface term dominates and $\Delta G_T(r)$ increases with size. For sufficiently large $r$, the bulk term dominates and $\Delta G_T(r)$ decreases with size. This competition produces a maximum in $\Delta G_T(r)$, which is the *nucleation barrier*, shown in @fig-bulk-surface.
 
 ```{python}
 #| label: fig-bulk-surface
@@ -112,20 +112,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 from IPython.display import SVG
 
+
 def delta_g_terms(r_m, delta_gv, gamma):
-    dg_bulk = (4/3) * np.pi * r_m**3 * delta_gv
+    dg_bulk = (4 / 3) * np.pi * r_m**3 * delta_gv
     dg_surf = 4 * np.pi * r_m**2 * gamma
     return dg_bulk, dg_surf, dg_bulk + dg_surf
+
 
 def r_c(delta_gv, gamma):
     return 2 * gamma / np.abs(delta_gv)
 
+
 def dg_c(delta_gv, gamma):
     return (16 * np.pi * gamma**3) / (3 * delta_gv**2)
 
+
 # arbitrary values
 delta_gv = -1.15e8  # J/m^3
-gamma = 0.5         # J/m^2
+gamma = 0.5  # J/m^2
 
 # fixed window based on this case
 rc_ref = r_c(delta_gv, gamma)
@@ -147,7 +151,7 @@ ax.plot(r_m * 1e9, dg_tot, lw=2, label="Total")
 ax.plot(r_m * 1e9, dg_bulk, "--", lw=2, color="g", label="Bulk")
 ax.plot(r_m * 1e9, dg_surf, "--", lw=2, color="r", label="Surface")
 
-ax.scatter([rc_nm], [dgc], s=60, zorder=3, color='k')
+ax.scatter([rc_nm], [dgc], s=60, zorder=3, color="k")
 ax.annotate(
     r"$(r_c, \Delta G_c)$",
     xy=(rc_nm, dgc),
@@ -235,10 +239,10 @@ $$
 So,
 
 $$
-\Delta g_v = \frac{\Delta h_f}{T_f}\Delta T,
+\Delta g_v = -\frac{\Delta h_f}{T_f}\Delta T,
 $$
 
-where $\Delta h_f$ is the enthalpy of fusion per unit volume (J/m$^3$) and $\Delta T = T - T_f$ (negative below $T_f$). This approximation is valid for $\lvert\Delta T\rvert \ll T_f$.
+where $\Delta h_f$ is the enthalpy of fusion per unit volume (J/m$^3$) and $\Delta T = T_f - T$ (positive below $T_f$). This approximation is valid for $\lvert\Delta T\rvert \ll T_f$.
 
 Substituting into the critical radius gives:
 
@@ -277,6 +281,10 @@ $$
 and in terms of molar volume, $V_M$,
 
 $$
+v_m = \frac{V_M}{N_A}, \qquad k_B = \frac{R}{N_A}
+$$
+
+$$
 \Delta G_c = \frac{16 \pi \gamma^3 V_M^2}{3(RT\ln(S))^2}
 $$
 
@@ -294,7 +302,7 @@ $$
 J = J_0 \exp\!\left(-\frac{\Delta G_c}{k_B T}\right),
 $$
 
-where $k_B$ is Boltzmann’s constant and $J_0$ is a kinetic prefactor$^*$. Using the CNT barrier height,
+where $k_B$ is Boltzmann’s constant and $J_0$ is a kinetic prefactor[^j_0]. Using the CNT barrier height,
 
 $$
 \Delta G_c = \frac{16\pi\gamma^3}{3(\Delta g_v)^2},
@@ -324,10 +332,7 @@ $$
 
 Because $J$ depends exponentially on the barrier, small changes in $\gamma\,$, $T$, or $S$ can change the nucleation rate by many orders of magnitude, as showcased in @fig-sensitivity. This sensitivity is one of the reasons nanoparticle synthesis can produce either no particles or a sudden burst of nuclei depending on experimental conditions.
 
----
-<p style="font-size:0.8em">
-$^* J_0$ is the product of the number of nucleation sites, $N_S$, the rate at which molecules attach to the nucleus $j$, and the Zeldovich factor $Z$ which gives the probability that a nucleus at the top of the energy barrier to form a new phase rather than dissolve.
-</p>
+[^j_0]: $J_0$ is the product of the number of nucleation sites, $N_S$, the rate at which molecules attach to the nucleus $j$, and the Zeldovich factor $Z$ which gives the probability that a nucleus at the top of the energy barrier to form a new phase rather than dissolve.
 
 ```{python}
 #| label: fig-sensitivity
@@ -418,24 +423,80 @@ SVG(filename="delta_g_sensitivity.svg")
 
 ## Heterogeneous nucleation
 
-In many real syntheses, nucleation occurs on container walls, impurities, seeds, or other surfaces (i.e., heterogenously).
+In many real syntheses, nucleation occurs on container walls, impurities, seeds, or other surfaces (i.e., heterogeneously).
 
-::: {#fig-contact-angle fig-cap="Schematic of a liquid drop showing the quantities in the Young equation. Image adapted from *Joris Gillis~commonswiki* (CC0), via Wikimedia Commons."}
-![Contact Angle](https://upload.wikimedia.org/wikipedia/commons/e/e4/Contact_angle.svg)
-:::
+<!-- ::: {#fig-contact-angle fig-cap="Schematic of a liquid drop showing the quantities in the Young equation. Image adapted from *Joris Gillis~commonswiki* (CC0), via Wikimedia Commons."} -->
+<!-- ![Contact Angle](https://upload.wikimedia.org/wikipedia/commons/e/e4/Contact_angle.svg) -->
+<!-- ::: -->
 
 The contact angle, $\theta$, is the angle formed where a liquid meets a solid surface. More precisely, it’s measured between the tangent to the liquid–vapor interface and the tangent to the solid–liquid interface at the point where they intersect. This angle is used to describe how well a liquid wets a solid surface and is related to the interfacial tensions through the Young equation, which describes mechanical equilibrium at the three-phase contact line.
 
 $$
-\gamma_\text{SG} = \gamma_\text{SL} + \gamma_\text{LG} \cos(\theta)
+\gamma^{\alpha \delta} = \gamma^{\beta \delta} + \gamma^{\alpha \beta} \cos(\theta)
 $$
 
-In heterogeneous nucleation, the barrier height is reduced relative to homogeneous nucleation by a geometric factor $f(\theta)$ that depends on the contact angle $\theta$:
+Doing some geometry reveals that for a spherical-cap nucleus (phase $\beta$) the volume is
 
 $$
-\Delta G_{c,\text{hetero}} = f(\theta)\,\Delta G_{c,\text{homo}}
+V_\beta = \frac{\pi r^3}{3} (2 + \cos \theta)(1-\cos\theta)^2
 $$
+
+and the surface area of the nucleus in contact with the solvent
+
+$$
+A_{\alpha\beta} = 2 \pi r^2 (1 - \cos \theta)
+$$
+
+and the cross-sectional area shared by the spherical cap and the substrate is
+
+$$
+A_{\alpha\delta} = A_{\beta\delta} = \pi \sin^2\theta r^2
+$$
+
+Similarly to homogeneous nucleation, both a bulk and surface term contribute the free energy. However, we also have a new third component $\Delta G_{\gamma^{\beta \delta}}$ that accounts for the interfacial energy associated with replacing part of the original solid-liquid interface between the substrate (container wall) and the solvent to a solid-solid interface between the substrate and the nucleus. So, we have
+
+$$
+\Delta G_V^\text{hetero}(r) = \Delta g_v V_\beta = \Delta g_v \frac{\pi r^3}{3}(2 + \cos \theta)(1 - \cos \theta)^2
+$$
+
+and the surface term is
+
+$$
+\Delta G_S^\text{hetero} = \gamma^{\alpha\beta} A_{\alpha\beta} = 2 \pi r^2 \gamma^{\alpha\beta}(1-\cos\theta)
+$$
+
+:::{.callout-note}
+The energy penalty due to surface between the nucleus and the solvent is lower since the interface created has a smaller area.
+:::
+
+And finally, the third component describing the energy of replacing an interface is
+
+$$
+\Delta G_{\text{replace}} = (\gamma^{\beta\delta} - \gamma^{\alpha\delta}) A_{\beta\delta} = (\gamma^{\beta\delta} - \gamma^{\alpha \delta}) \pi r^2 \sin^2\theta
+$$
+
+Combining all of these together we get,
+
+$$
+\Delta G_T^\text{hetero} = \Delta g_v V_\beta + \gamma^{\alpha\beta}A_{\alpha\beta} + (\gamma^{\beta\delta} - \gamma^{\alpha\delta}) A_{\beta\delta}
+$$
+
+We can simplify this by assuming that we are at Young equilibrium,
+
+$$
+\Delta G_T^\text{hetero} = \Delta g_v V_\beta + \gamma^{\alpha\beta} A_{\alpha\beta} - \gamma^{\alpha\beta} \cos(\theta) A_{\beta\delta} 
+$$
+
+and upon expanding we get that
+
+$$
+\Delta G_T^\text{hetero} = \Delta G_T^\text{homo} f(\theta)
+$$
+
 where
+$$
+f(\theta) = \frac{(2 + \cos \theta)(1 - \cos \theta)^2}{4}
+$$
 $$
 0 \le f(\theta) \le 1, \qquad 0\degree \le \theta \le 180\degree
 $$
@@ -448,32 +509,28 @@ This reduction can strongly increase the nucleation rate, because the rate depen
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-from IPython.display import Video
 
-# parameters
 G_s = 0.0
 G_l = 1.15e8
 gamma = 0.5
-delta_Gv = G_s - G_l  # negative
+delta_Gv = G_s - G_l
 
-# radius grid & precomputed terms that don't depend on theta
-r = np.linspace(0, 20e-9, 1000)
+r = np.linspace(0.0, 20e-9, 1000)
 r_nm = r * 1e9
-delta_G_bulk = (4/3) * np.pi * r**3 * delta_Gv
-delta_G_surface = 4 * np.pi * r**2 * gamma
+
+delta_G_bulk = (4.0/3.0) * np.pi * r**3 * delta_Gv
+delta_G_surface = 4.0 * np.pi * r**2 * gamma
 delta_G_homo = delta_G_bulk + delta_G_surface
 
-r_c = -2 * gamma / delta_Gv
-delta_G_homo_c = (16 * np.pi * gamma**3) / (3 * delta_Gv**2)
+r_c = -2.0 * gamma / delta_Gv
+delta_G_homo_c = (16.0 * np.pi * gamma**3) / (3.0 * delta_Gv**2)
 
-# figure
 fig, ax = plt.subplots(figsize=(7, 5))
+(line_homo,) = ax.plot(r_nm, delta_G_homo, lw=2, label="Homo")
+(line_hetero,) = ax.plot(r_nm, delta_G_homo, lw=2, label="Hetero")
 
-(line_homo,) = ax.plot(r_nm, delta_G_homo, lw=2, color="k", label="Homo")
-(line_hetero,) = ax.plot(r_nm, delta_G_homo, lw=2, color="C0", label="Hetero")
-
-pt_homo = ax.scatter([r_c * 1e9], [delta_G_homo_c], color="k", zorder=3, s=50)
-pt_hetero = ax.scatter([r_c * 1e9], [delta_G_homo_c], color="C0", zorder=3, s=50)
+pt_homo = ax.scatter([r_c * 1e9], [delta_G_homo_c], zorder=3, s=50)
+pt_hetero = ax.scatter([r_c * 1e9], [delta_G_homo_c], zorder=3, s=50)
 
 txt = ax.text(0.02, 0.92, "", transform=ax.transAxes)
 
@@ -483,40 +540,29 @@ ax.spines["top"].set_visible(False)
 
 ax.set_xlabel("Radius (nm)")
 ax.set_ylabel(r"$\Delta G$ (J)")
-ax.set_xlim(0, 1.8 * r_c * 1e9)
+ax.set_xlim(0.0, 1.8 * r_c * 1e9)
 ax.set_ylim(0.015 * delta_G_bulk.min(), 0.08 * delta_G_surface.max())
 ax.legend(frameon=False)
 fig.tight_layout()
 
-# to get a loop, we iterate theta from 0 to 180 then back to 0.
-thetas = np.concatenate([
-    np.linspace(0, 180, 181),
-    np.linspace(180, 0, 181)[1:]
-])
-
-def f_theta(theta_deg):
-    th = np.deg2rad(theta_deg)
-    return 0.25 * (2 + np.cos(th)) * (1 - np.cos(th))**2
+thetas = np.r_[np.linspace(0.0, 180.0, 181), np.linspace(180.0, 0.0, 181)[1:]]
+th = np.deg2rad(thetas)
+f_vals = 0.25 * (2.0 + np.cos(th)) * (1.0 - np.cos(th))**2
 
 def update(i):
-    theta = float(thetas[i])
-    f = f_theta(theta)
+    f = float(f_vals[i])
 
     y_hetero = f * delta_G_homo
     line_hetero.set_ydata(y_hetero)
 
-    delta_G_hetero_c = f * delta_G_homo_c
-    pt_hetero.set_offsets([[r_c * 1e9, delta_G_hetero_c]])
+    pt_hetero.set_offsets([[r_c * 1e9, f * delta_G_homo_c]])
 
-    txt.set_text(fr"$\theta$ = {theta:.0f}°   $f(\theta)$ = {f:.2f}")
+    txt.set_text(fr"$\theta$ = {thetas[i]:.0f}°   $f(\theta)$ = {f:.2f}")
     return line_hetero, pt_hetero, txt
 
 ani = FuncAnimation(fig, update, frames=len(thetas), interval=30, blit=True)
-
 ani.save("homo_hetero.mp4", fps=30, dpi=150)
 plt.close(fig)
-
-Video("assets/homo_hetero.mp4", embed=False, html_attributes='autoplay loop muted playsinline style="max-width: 100%;"')
 ```
 
 ::: {#fig-theta-effect}
@@ -527,10 +573,10 @@ Video("assets/homo_hetero.mp4", embed=False, html_attributes='autoplay loop mute
        playsinline
        style="max-width: 100%;">
 </video>
-Effect of contact angle on free energy of heterogeneous nucleation
+Effect of contact angle on free energy of heterogeneous nucleation under Young elimination.
 :::
 
-We notice in @fig-theta-effect that heterogeneous nucleation has an energy barrier lower than that of an equivalent homogeneous nucleation; however, the critical radius remains the same for both. This occurs because the contact angle modifies the geometry of the nuclues, reducing the interfacial area and thus the barrier height, but does not change the volumetric driving force ($g_v$) that determines $r_c$.
+We notice in @fig-theta-effect that heterogeneous nucleation has an energy barrier lower than that of an equivalent homogeneous nucleation. Under the Young-equilibrium assumption, the heterogenous free energy reduces to the homogeneous form scaled by a geometric factor $f(\theta)$ and the critical radius remains the same as the homogeneous case. This occurs because the contact angle modifies the geometry of the nucleus, reducing the interfacial area and thus the barrier height, but does not change the volumetric driving force ($\Delta g_v$) that determines $r_c$.
 
 ## Limitations
 
