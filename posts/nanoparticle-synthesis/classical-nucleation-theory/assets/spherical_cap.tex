@@ -1,0 +1,53 @@
+% Made by Fai
+% published on faithefairy.github.io/fai-notes
+
+\documentclass[tikz,border=3mm]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+\begin{document}
+\begin{tikzpicture}[line cap=round, line join=round]
+
+\def\R{3}
+\def\thetaDeg{110}
+\def\Xmax{6.0}
+
+\pgfmathsetmacro{\th}{\thetaDeg}
+\pgfmathsetmacro{\a}{\R*sin(\th)}
+\pgfmathsetmacro{\yc}{-\R*cos(\th)}
+\pgfmathsetmacro{\h}{\R*(1-cos(\th))}
+\pgfmathsetmacro{\angL}{90 - \thetaDeg}
+\pgfmathsetmacro{\angR}{90 + \thetaDeg}
+
+\coordinate (O) at (0,\yc);
+\coordinate (L) at (-\a,0);
+\coordinate (R) at ( \a,0);
+\coordinate (Apex) at (0,\h);
+
+\draw[thick] (-\Xmax / 2 ,0) -- (\Xmax / 1.5,0);
+\node[right]  at (\Xmax / 1.75, \h/6) {$\alpha$};
+\node[right] at (\Xmax / 1.75, -\h/6) {$\delta$};
+
+\draw[dashed, opacity=0.35] (O) circle[radius=\R];
+
+\draw[thick]
+  ($(O)+(\angL:\R)$) arc[start angle=\angL, end angle=\angR, radius=\R];
+
+\node at (0,\h/2) {$\beta$};
+
+\draw[->, dashed] (O) -- node[midway, above right] {$r$} (R);
+
+\draw[dotted] (L) -- ++(\thetaDeg:\h);
+\draw (L) ++(0.3,0) arc[start angle=0, end angle=\thetaDeg, radius=0.3];
+\node at ($(L)+(0.55,0.22)$) {$\theta$};
+
+\node at (\a,\h) {$\gamma^{\alpha\beta}$};
+\node[below] at (0,0) {$\gamma^{\beta\delta}$};
+\node[right] at (\Xmax/1.5,0) {$\gamma^{\alpha\delta}$};
+
+\fill (L) circle[radius=0.04];
+\fill (R) circle[radius=0.04];
+\fill (O) circle[radius=0.04];
+
+\end{tikzpicture}
+\end{document}
