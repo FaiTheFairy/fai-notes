@@ -9,9 +9,6 @@ jupyter:
     display_name: Python 3 (ipykernel)
     language: python
     name: python3
-format:
-  html:
-    code-fold: true
 execute:
   freeze: auto
 ---
@@ -425,9 +422,9 @@ SVG(filename="delta_g_sensitivity.svg")
 
 In many real syntheses, nucleation occurs on container walls, impurities, seeds, or other surfaces (i.e., heterogeneously).
 
-<!-- ::: {#fig-contact-angle fig-cap="Schematic of a liquid drop showing the quantities in the Young equation. Image adapted from *Joris Gillis~commonswiki* (CC0), via Wikimedia Commons."} -->
-<!-- ![Contact Angle](https://upload.wikimedia.org/wikipedia/commons/e/e4/Contact_angle.svg) -->
-<!-- ::: -->
+::: {#fig-contact-angle fig-cap="Schematic of a liquid drop showing the quantities in the Young equation. [TikZ source](https://github.com/faithefairy/fai-notes/blob/main/posts/nanoparticle-synthesis/classical-nucleation-theory/assets/spherical_cap.tex)."}
+![](assets/spherical_cap.svg){width=80%}
+:::
 
 The contact angle, $\theta$, is the angle formed where a liquid meets a solid surface. More precisely, it’s measured between the tangent to the liquid–vapor interface and the tangent to the solid–liquid interface at the point where they intersect. This angle is used to describe how well a liquid wets a solid surface and is related to the interfacial tensions through the Young equation, which describes mechanical equilibrium at the three-phase contact line.
 
