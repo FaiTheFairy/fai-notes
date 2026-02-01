@@ -10,9 +10,9 @@
 !.gitignore
 !.python-version
 
-# github workflows
+# github 
 !.github/**
-
+!**/.gitkeep
 
 # quarto and content files
 !**/*.qmd
