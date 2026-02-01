@@ -426,7 +426,7 @@ In many real syntheses, nucleation occurs on container walls, impurities, seeds,
 ![](assets/spherical_cap.svg){width=80%}
 :::
 
-The contact angle, $\theta$, is the angle formed where a liquid meets a solid surface. More precisely, it’s measured between the tangent to the liquid–vapor interface and the tangent to the solid–liquid interface at the point where they intersect. This angle is used to describe how well a liquid wets a solid surface and is related to the interfacial tensions through the Young equation, which describes mechanical equilibrium at the three-phase contact line.
+The contact angle, $\theta$, is the angle formed where a liquid meets a solid surface. More precisely, it’s measured between the tangent to the liquid–vapor interface and the tangent to the solid–liquid interface at the point where they intersect. This angle is used to describe how well a liquid wets a solid surface and is related to the interfacial tensions through the [Young equation](https://en.wikipedia.org/wiki/Wetting#Ideal_solid_surfaces), which describes mechanical equilibrium at the three-phase contact line.
 
 $$
 \gamma^{\alpha \delta} = \gamma^{\beta \delta} + \gamma^{\alpha \beta} \cos(\theta)
@@ -581,6 +581,27 @@ Classical nucleation theory treats a nucleus as a spherical, bulk-like phase wit
 
 Moreover, the nucleation rate depends exponentially on the free-energy barrier, so even small uncertainties in microscopic parameters lead to orders-of-magnitude differences in predicted rates. This fact makes first-principles predictions nearly impossible, and CNT is therefore more useful for understanding trends and sensitivities than for quantitative prediction.[@Oxtoby1992]
 
+## Summary Table
+
+### Summary of CNT
+
+| Quantity\\Formulation | Volumetric $\Delta g_v$ | Supercooling $\Delta T$ | Supersaturation $S$ |
+|---|:---:|:---:|:---:|
+| Free energy $\Delta G_T(r)$ | $\tfrac{4}{3} \pi r^3 \Delta g_v + 4 \pi r^2 \gamma$ | $-\dfrac{4 \pi \rho \hat{q}_f}{3 T_s} \Delta T r^3 + 4 \pi r^2 \gamma$ | $-\dfrac{k_B T}{v_m}\ln S + 4 \pi r^2 \gamma$ |
+| Critical radius $r_c$ | $\dfrac{2\gamma}{|\Delta g_v|}$ | $\dfrac{2\gamma T_f}{\Delta h_{f,v}\,\Delta T}$ | $\dfrac{2\gamma v_m}{k_B T \ln S}$ |
+| Barrier height $\Delta G_c$ | $\dfrac{16\pi\gamma^3}{3(\Delta g_v)^2}$ | $\dfrac{16\pi\gamma^3 T_f^2}{3(\Delta h_{f,v})^2(\Delta T)^2}$ | $\dfrac{16\pi\gamma^3 v_m^2}{3 k_B^3 T^3 (\ln S)^2}$ |
+| Nucleation rate $J$ | $J_0 \exp\!\left(-\dfrac{\Delta G_c}{k_B T}\right)$ | same | same |
+
+
+### Heterogeneous nucleation
+
+| Result | Expression |
+|---|---|
+| Total free energy $G_T$ | $\Delta g_v V_\beta + \gamma^{\alpha\beta}A_{\alpha\beta} + (\gamma^{\beta\delta} - \gamma^{\alpha\delta}) A_{\beta\delta}$
+| Barrier scaling | $\Delta G_c^{\text{hetero}} = f(\theta)\,\Delta G_c^{\text{homo}}$ |
+| Critical radius | $r_c^{\text{hetero}} = r_c^{\text{homo}}$ |
+| Geometric factor | $f(\theta) = \dfrac{(2+\cos\theta)(1-\cos\theta)^2}{4}$ |
+| Bounds | $0 \le f(\theta) \le 1,\quad 0^\circ \le \theta \le 180^\circ$ |
 
 ## References
 ::: {#refs}

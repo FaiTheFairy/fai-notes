@@ -36,7 +36,7 @@ format:
     respect-user-color-scheme: true
     code-fold: true
     code-tools:
-      toggle: true
+      toggle: false
       source: repo
 
 
