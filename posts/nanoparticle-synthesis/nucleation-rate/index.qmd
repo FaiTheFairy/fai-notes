@@ -1,0 +1,235 @@
+---
+title: Nucleation rate and critical supercooling
+bibliography: references.bib
+jupyter:
+  jupytext:
+    formats: ipynb,py:percent
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
+
+
+:::{.callout}
+Throughout this section we follow the [same](../classical-nucleation-theory/#units-and-notation-used-in-this-notebook) unit conventions and sign definitions introduced in the previous CNT article, with $\Delta g_v < 0$ below $T_s$.
+:::
+
+We [previously](../classical-nucleation-theory/#nucleation-rate-and-the-free-energy-barrier) established that, within classical nucleation theory (CNT), the steady-state homogeneous nucleation rate can be written as
+
+$$
+J = J_0 \exp\!\left(-\frac{\Delta G_c}{k_B T}\right),
+$$
+
+where $\Delta G_c$ is the height of the nucleation free-energy barrier, $k_B$ is Boltzmann’s constant, and $J_0$ is a kinetic prefactor that contains information about how rapidly atoms or molecules attach to a critical nucleus.
+
+In many systems of interest, attachment at the critical nucleus is limited by atomic or molecular transport. A simple and commonly used model is therefore to take the prefactor to be diffusion-controlled in solids,
+
+$$
+J_0 \sim \frac{2D}{\lambda^2} N_S,
+$$
+
+where $D$ is the diffusion coefficient, $\lambda$ is a characteristic jump length (of order an interatomic spacing), and $N_S$ is the number of available nucleation sites per unit volume. With this choice, the nucleation rate may be written as
+
+$$
+J = \frac{2D}{\lambda^2} N_S
+\exp\!\left(-\frac{\Delta G_c}{k_B T}\right).
+$$
+
+
+## Diffusion-limited kinetics
+
+Diffusion in solids and highly viscous liquids is well described by Arrhenius behavior.[@Callister_Rethwisch_2019]
+The diffusion coefficient takes the form
+
+$$
+D = D_0 \exp\!\left(-\frac{Q}{k_B T}\right),
+$$
+
+where $D_0$ is a prefactor and $Q$ is the activation energy for diffusion. Substituting this expression into the nucleation rate gives
+
+$$
+J
+= \frac{2D_0 N_S}{\lambda^2}
+\exp\!\left(-\frac{Q + \Delta G_c}{k_B T}\right).
+$$
+
+This expression makes explicit that nucleation involves two distinct energetic penalties: a kinetic penalty associated with atomic mobility ($Q$) and a thermodynamic penalty associated with forming a critical nucleus ($\Delta G_c$).
+
+
+## Free-energy barrier and supercooling
+
+For homogeneous nucleation of a spherical solid nucleus, CNT gives the barrier height
+
+$$
+\Delta G_c = \frac{16\pi\gamma^3}{3(\Delta g_v)^2},
+$$
+
+where $\gamma$ is the solid–liquid interfacial energy and $\Delta g_v$ is the free-energy change per unit volume driving solidification.
+
+For modest supercooling, and neglecting the temperature-dependence of $\gamma$, $\Delta g_v$ may be approximated as
+
+$$
+\Delta g_v \approx \frac{\rho q_s}{T_s}\,\Delta T,
+$$
+
+where $\rho$ is the mass density, $q_s$ is the latent heat of fusion per mass, $T_s$ is the equilibrium solidification temperature, and
+
+$$
+\Delta T = T_s - T
+$$
+
+is the supercooling. Substitution into the CNT expression yields
+
+$$
+\Delta G_c(\Delta T)
+= \frac{16\pi\gamma^3 T_s^2}{3\rho^2 q_s^2}\,\frac{1}{\Delta T^2}.
+$$
+
+The nucleation barrier therefore decreases rapidly as the degree of supercooling increases.
+
+## Nucleation rate as a function of supercooling
+
+Using $T = T_s - \Delta T$ and the expression above for $\Delta G_c(\Delta T)$, the nucleation rate may be written explicitly as a function of supercooling:
+
+$$
+J(\Delta T)
+= \frac{2D_0 N_S}{\lambda^2}
+\exp\!\left[
+-\frac{Q}{k_B (T_s-\Delta T)}
+-\frac{1}{k_B (T_s-\Delta T)}
+\frac{16\pi\gamma^3 T_s^2}{3\rho^2 q_s^2 \Delta T^2}
+\right].
+$$
+
+Taking the natural logarithm highlights the competing contributions:
+
+$$
+\ln J
+=
+-\underbrace{\frac{Q}{k_B (T_s-\Delta T)}}_{\text{kinetic slowdown}}
+-
+\underbrace{\frac{16\pi\gamma^3 T_s^2}{3k_B\rho^2 q_s^2 (T_s-\Delta T)\Delta T^2}}_{\text{thermodynamic barrier}}
++ \text{const}.
+$$
+
+The first term increases rapidly as temperature decreases (increased supercooling), reflecting the strong suppression of diffusion at low $T$. The second term decreases rapidly with increasing supercooling, reflecting the reduction of the nucleation barrier. Because one contribution favors small $\Delta T$ while the other favors large $\Delta T$, their competition produces a maximum in the nucleation rate at a finite, critical supercooling $\Delta T_c$ within this diffusion-controlled CNT model.
+
+
+```{python}
+#| fig-cap: "Homogeneous nucleation rate vs supercooling showing the competing kinetic and thermodynamic factors that produce a maximum."
+#| label: fig-nucleation-rate-factors
+import numpy as np
+import matplotlib.pyplot as plt
+
+k_B = 1.380649e-23
+
+# parameters
+T_s = 1377.0          # K
+gamma = 0.2           # J/m^2
+rho = 1.93e4          # kg/m^3
+q_s = 3.25e5          # J/kg
+Q = 3.3e-19           # J
+
+# supercooling range
+dT = np.linspace(1, 0.98*T_s, 2000)
+T = T_s - dT
+
+# CNT barrier coefficient
+A = 16*np.pi*gamma**3*T_s**2 / (3*rho**2*q_s**2)
+
+# terms
+thermo = np.exp(-A / (k_B * T * dT**2))
+kinetic = np.exp(-Q / (k_B * T))
+
+# nucleation rate; we ignore the prefactor
+J = thermo * kinetic
+
+# normalize
+thermo /= thermo.max()
+kinetic /= kinetic.max()
+J /= J.max()
+
+# plot
+fig, ax = plt.subplots(figsize=(6,4))
+ax.plot(dT, J, label=r"$J(\Delta T)$", linewidth=2)
+ax.plot(dT, thermo, "--", label="thermodynamic term")
+ax.plot(dT, kinetic, "--", label="kinetic term")
+
+ax.set_xlabel(r"Supercooling $\Delta T$ (K)")
+ax.set_ylabel("Normalized magnitude")
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.set_yticks([])
+
+fig.legend(frameon=False, loc=(0.5, 0.5))
+fig.tight_layout()
+
+plt.show()
+```
+
+We can also account for heterogenous nucleation by using
+
+$$
+\Delta G^\text{het}_c = \Delta G^\text{homo}_c f(\theta)
+$$
+
+And we notice that the maximum nucleation rate for heterogenous nucleation happens at a lower degree of supercooling than that of homogenous
+
+```{python}
+#| fig-cap: "The degree of supercooling in which a maximum nucleation rate occurs is smaller for heterogenous nucleation than homogenous"
+#| label: fig-nucleation_rate_hetero
+import numpy as np
+import matplotlib.pyplot as plt
+
+k_B = 1.380649e-23
+
+T_s = 1377.0
+gamma = 0.2
+rho = 1.93e4
+q_s = 3.25e5
+Q = 3.3e-19
+
+dT = np.linspace(5.0, 0.6 * T_s, 2000)
+T = T_s - dT
+
+A = 16 * np.pi * gamma**3 * T_s**2 / (3 * rho**2 * q_s**2)
+
+def f_theta(theta_rad):
+    return 0.25 * (2 + np.cos(theta_rad)) * (1 - np.cos(theta_rad))**2
+
+kinetic = np.exp(-Q / (k_B * T))
+
+theta_het_deg = 30
+f_het = f_theta(np.deg2rad(theta_het_deg))
+
+thermo_hom = np.exp(-1.0 * A / (k_B * T * dT**2))
+thermo_het = np.exp(-f_het * A / (k_B * T * dT**2))
+
+J_hom = thermo_hom * kinetic
+J_het = thermo_het * kinetic
+
+J_hom /= J_hom.max()
+J_het /= J_het.max()
+
+fig, ax = plt.subplots(figsize=(6, 4))
+ax.plot(dT, J_hom, linewidth=2.2, label=r"homogeneous ($\theta=180^\circ$)")
+ax.plot(dT, J_het, linewidth=2.2, label=rf"heterogeneous ($\theta={theta_het_deg}^\circ$)")
+
+ax.set_xlabel(r"Supercooling $\Delta T$ (K)")
+ax.set_ylabel(r"$\frac{J}{J_{\max}}$")
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+#ax.set_xticks([])
+ax.set_yticks([])
+
+ax.legend(frameon=False)
+
+fig.tight_layout()
+plt.show()
+```
+
+We have seen thus far, that heterogenous nucleation has a lower free-energy barrier and therefore requires less supercooling than homogenous nucleation. They also have the same critical radius under equilibrium. Nonetheless, homogenous nucleation is sometimes desired (such as in electronic fields where shape matters), so how can we achieve that?
+
+The main technique available to us is having a very high contact angle so that homogenous nucleation dominates. This is achieved by using a surface that is highly repellent to the material of nucleation. A popular example would be to use Teflon or use smooth glass with a coating on it.
+

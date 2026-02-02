@@ -7,3 +7,7 @@ title: Nanoparticle Synthesis
 Introduction to CNT, the LaMer model, and heterogeneous nucleation.
 
 [Read Week 1](classical-nucleation-theory/)
+
+## Week 2: Nucleation Rate
+
+[Read Week 2](nucleation-rate/)

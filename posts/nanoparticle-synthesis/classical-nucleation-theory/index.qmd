@@ -1,7 +1,6 @@
 ---
 title: Classical Nucleation Theory
 bibliography: references.bib
-csl: acs-nano.csl
 jupyter:
   jupytext:
     formats: ipynb,py:percent
