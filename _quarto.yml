@@ -38,5 +38,5 @@ format:
     code-tools:
       toggle: false
       source: repo
-
+csl: assets/acs-nano.csl
 
