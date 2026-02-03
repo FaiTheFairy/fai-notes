@@ -2,6 +2,8 @@
 title: Nanoparticle Synthesis
 ---
 
+This course covers the fundamental principles of nanoparticle synthesis with an emphasis on real-life application in the lab.
+
 ## Week 1: Classical Nucleation Theory
 
 Introduction to CNT, the LaMer model, and heterogeneous nucleation.
@@ -9,5 +11,7 @@ Introduction to CNT, the LaMer model, and heterogeneous nucleation.
 [Read Week 1](classical-nucleation-theory/)
 
 ## Week 2: Nucleation Rate
+
+Nucleation rate, diffusion, and ideal supercooling
 
 [Read Week 2](nucleation-rate/)

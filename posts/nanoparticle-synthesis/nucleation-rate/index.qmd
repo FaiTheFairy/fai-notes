@@ -1,5 +1,5 @@
 ---
-title: Nucleation rate and critical supercooling
+title: Nucleation rate and ideal supercooling
 bibliography: references.bib
 jupyter:
   jupytext:
@@ -11,7 +11,7 @@ jupyter:
 ---
 
 
-:::{.callout}
+:::{.callout-note}
 Throughout this section we follow the [same](../classical-nucleation-theory/#units-and-notation-used-in-this-notebook) unit conventions and sign definitions introduced in the previous CNT article, with $\Delta g_v < 0$ below $T_s$.
 :::
 
@@ -119,8 +119,10 @@ The first term increases rapidly as temperature decreases (increased supercoolin
 ```{python}
 #| fig-cap: "Homogeneous nucleation rate vs supercooling showing the competing kinetic and thermodynamic factors that produce a maximum."
 #| label: fig-nucleation-rate-factors
+#| fig-format: svg
 import numpy as np
 import matplotlib.pyplot as plt
+from IPython.display import SVG
 
 k_B = 1.380649e-23
 
@@ -162,10 +164,11 @@ ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 ax.set_yticks([])
 
-fig.legend(frameon=False, loc=(0.5, 0.5))
+fig.legend(frameon=False, loc=(0.48, 0.5))
 fig.tight_layout()
-
-plt.show()
+plt.savefig('nucleation_rate_factors.svg')
+plt.close()
+SVG('nucleation_rate_factors.svg')
 ```
 
 We can also account for heterogenous nucleation by using
@@ -226,8 +229,14 @@ ax.set_yticks([])
 ax.legend(frameon=False)
 
 fig.tight_layout()
-plt.show()
+plt.savefig('nucleation_rate_hetero.svg')
+plt.close()
+SVG('nucleation_rate_hetero.svg')
 ```
+
+:::{.callout-warning}
+While we frequently want fast nucleation rates when growing nanoparticles, that is not always the case. Sometimes, some constraints and design criteria make a slower and more controlled nucleation rate more desirable.
+:::
 
 We have seen thus far, that heterogenous nucleation has a lower free-energy barrier and therefore requires less supercooling than homogenous nucleation. They also have the same critical radius under equilibrium. Nonetheless, homogenous nucleation is sometimes desired (such as in electronic fields where shape matters), so how can we achieve that?
 
