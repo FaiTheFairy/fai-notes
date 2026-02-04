@@ -1,0 +1,348 @@
+---
+title: Growth
+jupyter:
+  jupytext:
+    formats: ipynb,py:percent
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
+
+
+The overall phase transformation not only depends on the thermodynamic driving force and kinetic barriers to nucleation, but also on the kinetics of particle growth.
+
+Considering the energetic factors in nucleation, we can draw a free energy plot showing the two phases, liquid $\alpha$ and solid $\beta$. We notice on the plot the growth driving force $\Delta G_\text{growth}$, and $Q$ representing the actavation barrier associated with diffusion.
+
+We can say that the energy barrier for $\alpha \rightarrow \beta$ is proportional to 
+
+$$
+\exp\!\left(-\frac{Q}{k_BT}\right)
+$$
+
+However, the opposite direction, $\alpha \leftarrow \beta$, would require an energy proportional to
+
+$$
+\exp\!\left(-\frac{Q + \Delta G_\text{growth}}{k_B T}\right)
+$$
+
+These expressions should be interpreted as rate factors, not distinct activation barriers: both forward and reverse processes cross the same kinetic barrier $Q_a$, but the reverse process is additionally penalized by the thermodynamic free-energy difference between phases.
+
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Data: double-well free energy (schematic)
+x = np.linspace(0.0, 1.0, 1200)
+
+Q_a = 8.0
+DeltaG_v = 2.2  # positive magnitude; beta is lower by DeltaG_v
+
+# Double-well with barrier at x=0.5 (max=Q_a), minima at x=0 and x=1 (base=0)
+G_base = Q_a * 16.0 * x**2 * (1.0 - x)**2
+
+# Tilt so beta is more stable (right well lower):
+# at x=0: +DeltaG_v/2, at x=1: -DeltaG_v/2  => G_alpha - G_beta = DeltaG_v
+G_tilt = (DeltaG_v / 2.0) * (1.0 - 2.0 * x)
+
+G = G_base + G_tilt
+
+# Key points
+i_bar = int(np.argmax(G))
+x_bar = x[i_bar]
+G_bar = G[i_bar]
+
+G_alpha = G[0]
+G_beta = G[-1]
+
+# Plot
+fig, ax = plt.subplots(figsize=(6, 4))
+
+# Background phase shading
+#ax.axvspan(0.0, 0.5, color="0.92", zorder=0)
+#ax.axvspan(0.5, 1.0, color="0.85", zorder=0)
+
+# Main curve
+ax.plot(x, G, color="0.35", zorder=3)
+
+# Reference lines
+ax.hlines(G_alpha, 0.0, 1.0, colors="C0", linestyles=":", linewidth=1.6, zorder=1)
+ax.hlines(G_beta, 0.0, 1.0, colors="C1", linestyles=(0, (5, 3)), linewidth=1.6, zorder=1)
+
+# Hide default spines and ticks
+#for sp in ax.spines.values():
+#    sp.set_visible(False)
+ax.spines.top.set_visible(False)
+ax.spines.right.set_visible(False)
+#ax.set_xticks([])
+ax.set_yticks([])
+
+# Custom axes with arrows
+xmin, xmax = 0.0, 1.0
+ymin = min(G_beta, G_alpha) - 1.2
+ymax = G_bar + 1.2
+ax.set_xlim(xmin, xmax)
+ax.set_ylim(ymin, ymax)
+
+# ax.annotate(
+#     "", xy=(xmax + 0.06, ymin), xytext=(xmin - 0.02, ymin),
+#     arrowprops=dict(arrowstyle="->", color="black"),
+#     annotation_clip=False,
+# )
+# ax.annotate(
+#     "", xy=(xmin - 0.02, ymax), xytext=(xmin - 0.02, ymin),
+#     arrowprops=dict(arrowstyle="->", color="black"),
+#     annotation_clip=False,
+# )
+
+# Axis label
+ax.text(xmin - 0.09, 0.5 * (ymin + ymax), r"$G$ (Gibbs energy)",
+        rotation=90, va="center", ha="center")
+
+# Phase labels (top)
+ax.text(0.08, ymax - 0.35, r"Phase ($\alpha$)", ha="center", va="top")
+ax.text(0.92, ymax - 0.35, r"Phase ($\beta$)", ha="center", va="top")
+
+# Labels near minima
+ax.text(0.15, G_alpha + 0.25, r"$G_\alpha$", color="C0")
+ax.text(0.65, G_beta + 0.25, r"$G_\beta$", color="C1")
+
+# Red arrows / annotations
+arrow_kw = dict(arrowstyle="<->", color="red")
+
+# Q_a: from G_alpha up to barrier
+ax.annotate("", xy=(x_bar, G_bar), xytext=(x_bar, G_alpha),
+            arrowprops=arrow_kw, zorder=5)
+ax.text(x_bar + 0.01, 0.5 * (G_bar + G_alpha), r"$Q_a$",
+        color="red", va="center")
+
+# Delta G_v: from G_beta up to G_alpha (so it reads as a driving-force difference)
+x_dgv = 0.35
+ax.annotate("", xy=(x_dgv, G_alpha), xytext=(x_dgv, G_beta),
+            arrowprops=arrow_kw, zorder=5)
+ax.text(x_dgv + 0.01, 0.5 * (G_alpha + G_beta), r"$\Delta G_\text{growth}$",
+        color="red", va="center")
+
+# Q_a + Delta G_v: from G_beta up to barrier (place on right half)
+x_qtot = 0.80
+ax.annotate("", xy=(x_qtot, G_bar), xytext=(x_qtot, G_beta),
+            arrowprops=arrow_kw, zorder=5)
+ax.text(x_qtot + 0.01, 0.5 * (G_bar + G_beta), r"$Q_a + \Delta G_\text{growth}$",
+        color="red", va="center")
+
+fig.tight_layout()
+plt.show()
+```
+
+# Growth
+
+The overall phase transformation depends not only on the thermodynamic driving force and the kinetic barriers to *nucleation*, but also on the kinetics of *growth* once nuclei exist.
+
+To motivate a simple growth law, we need to consider two ideas:
+
+1. **Kinetics:** atoms or molecules must move (diffuse, rearrange, attach) to advance the interface. This mobility is commonly modeled with an Arrhenius factor
+$$
+\exp\!\left(-\frac{Q_a}{k_B T}\right),
+$$
+where $Q_a$ is an activation energy associated with atomic motion / attachment.
+
+2. **Thermodynamics:** even if atoms can move, the system must *prefer* the $\alpha \to \beta$ direction. This preference is set by the free-energy change per “growth unit.” We represent that driving force using a free-energy difference $\Delta G_\text{growth}$.
+
+A standard interface-limited picture treats growth as a competition between a forward attachment process and a reverse detachment process, both thermally activated. The net growth rate is proportional to the difference of these two fluxes:
+
+$$
+\frac{\mathrm{d}r}{\mathrm{d}t}
+= n_0\left[
+\exp\!\left(-\frac{Q_a}{k_B T}\right)
+-
+\exp\!\left(-\frac{Q_a + \Delta G_\text{growth}}{k_B T}\right)
+\right],
+$$
+
+which may be written as
+
+$$
+\frac{\mathrm{d}r}{\mathrm{d}t}
+= n_0 \exp\!\left(-\frac{Q_a}{k_B T}\right)
+\left(1 - \exp\!\left(-\frac{\Delta G_\text{growth}}{k_B T}\right)\right).
+$$
+
+Here $n_0$ is a growth prefactor, $Q_a$ is the kinetic penalty for atomic motion, and $\Delta G_\text{growth}$ appears only as a *thermodynamic* between forward and reverse interfacial events.
+
+We also saw in the [nucleation-rate post](../nucleation-rate) that at low temperatures diffusion is very slow, while at higher temperatures the thermodynamic barrier to nucleation decreases rapidly. A similar competition appears in growth: at low $T$ kinetics dominate (slow mobility), while near $T_s$ the driving force is small. As a result, transformation kinetics also exhibit an "intermediate temperature" region where transformation proceeds most rapidly.
+
+## Particle growth as a two-step process
+
+We can think about growth as two resistances in series:
+
+1. **Transport:** monomers (atoms or molecules) must reach the particle surface through the solvent.
+2. **Interface reaction:** monomers must attach / rearrange at the surface to be incorporated into the solid phase.
+
+Depending on which step is slower, different growth regimes are observed: diffusion-controlled growth, interface-controlled growth, or mixed control.
+
+In diffusion-controlled growth, the rate is primarily limited by $D(T)$, so cooling quickly suppresses growth. In interface-controlled growth, transport is fast and the limiting step is attachment at the interface, often modeled with an Arrhenius factor $\exp(-Q_a/k_B T)$. Mixed control is common in practice, where both transport and attachment contribute to the overall resistance.
+
+**A solid phase in solution can dissolve or grow. For particles larger than the critical radius, which process is thermodynamically favored?**
+
+For $r > r^*$, increasing the particle size lowers the total free energy $\Delta G(r)$: the bulk term dominates over the surface term. Therefore growth is thermodynamically favored, while for $r < r^*$ dissolution reduces $\Delta G(r)$.
+
+**Why can growth be slow even when nucleation is thermodynamically favored?**
+
+Even when the driving force is large (large $|\Delta G_\text{growth}|$), growth can be suppressed if atomic mobility is low. In the simple growth law above, mobility is represented through $\exp(-Q_a/k_B T)$, which becomes very small at low $T$. Thus transformation can be thermodynamically favorable but kinetically hindered.
+
+## TTT diagram (time, temperature, and transformation)
+
+A common way to visualize transformation kinetics is a time–temperature–transformation (TTT) diagram. In a TTT plot, each curve corresponds to the time required to reach a chosen transformation threshold at each temperature.
+
+Here we construct a TTT-style plot using a CNT-inspired model for the nucleation rate $J(T)$. We define a reference nuclei density threshold $N_c$ and plot the time required to reach fractions $\zeta N_c$ (with $\zeta = 0.01, 0.50, 0.99$).
+
+```{python}
+##| fig-cap = "TTT-style curve from CNT: time to reach a nuclei-density threshold vs temperature (water-like parameters)."
+##| fig-label: fig-TTT
+
+import numpy as np
+import matplotlib.pyplot as plt
+from IPython.display import SVG
+
+k_B = 1.380649e-23
+
+T_s = 273.15
+gamma = 0.030       # J/m^2  (toy value)
+rho = 1.0e3         # kg/m^3
+q_s = 3.34e5        # J/kg
+Q = 3.0e-20         # J
+D_0 = 3e-9          # m^2/s
+free_path = 2.5e-10 # m
+N_s = 1e29          # nucleation sites / m^3
+
+T_min = 100.0
+T_max = 200.0
+T = np.linspace(T_min, T_max, 400)
+dT = np.maximum(T_s - T, 1e-6)
+
+A = 2.0 * D_0 * N_s / free_path
+B = 16.0 * np.pi * gamma**3 * T_s**2 / (3.0 * k_B * rho**2 * q_s**2 * dT**2)
+
+J = A * np.exp(-Q / (k_B * T) - B / T)
+
+fig, ax = plt.subplots(figsize=(6, 4))
+fig.subplots_adjust(hspace=0.05)
+
+labels = ["start (1%)", "mid (50%)", "finish (99%)"]
+N_c = 1e20
+
+for zeta, label in zip([0.01, 0.50, 0.99], labels):
+    N_star = zeta * N_c
+    t = N_star / J
+    ax.semilogx(t, T, linewidth=2, label=label)
+
+ax.set_ylabel(r"$T$ (K)")
+ax.set_xlabel(r"Time to reach $\zeta N_c$ (s)")
+
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+
+ax.legend(
+    frameon=False,
+    title=r"threshold fraction $\zeta$",
+    bbox_to_anchor=(0.5, 1.1),
+    ncols=3,
+    loc="center",
+)
+
+ax.axhline(T_s, color="C3")
+ax.text(2e-2, T_s, r"$T_s$", color="C3", backgroundcolor="w", va="center")
+ax.text(2e-2, 100, "Low diffusion", color="dimgray")
+ax.text(2e-2, 200, "Low driving force", color="dimgray")
+
+fig.tight_layout()
+fig.savefig("TTT.svg")
+plt.close(fig)
+SVG("TTT.svg")
+```
+
+Zooming in on the start curve, we can estimate a *critical cooling path* that just avoids intersecting the transformation-start curve. If the material cools faster (more negative slope) than this path, it can pass through the transformation window without initiating transformation. A simple estimate connects $(0, T_s)$ to the nose point $(\Delta t^*, T^*)$, giving a characteristic critical cooling magnitude
+
+$$
+\left|\frac{\mathrm{d}T}{\mathrm{d}t}\right|_\text{crit} \approx \frac{\Delta T^*}{\Delta t^*}.
+$$
+
+```{python}
+##| fig-cap = Critical cooling rate to avoid transformation depicted. Note that we are plotting time in *linear* space now instead of log space.
+##| fig-label: fig-crit-cooling
+
+import numpy as np
+import matplotlib.pyplot as plt
+from IPython.display import SVG
+
+k_B = 1.380649e-23
+
+T_s = 273.15
+gamma = 0.030       # m
+rho = 1.0e3         # m^3/kg
+q_s = 3.34e5        # J/kg
+Q = 3.0e-20         # J
+D_0 = 3e-9          # m^2/s
+free_path = 2.5e-10 # m
+N_s = 1e29          # nucleation site / m^3
+
+T_min = 100.0
+T_max = 200
+T = np.linspace(T_min, T_max, 400)
+dT = T_s - T
+
+A = 2 * D_0 * N_s / free_path
+B = 16.0 * np.pi * gamma**3 * T_s**2 / (3.0 * k_B * rho**2 * q_s**2 * dT**2)
+
+J = A * np.exp(-Q / (k_B * T) - B / T)
+
+fig, ax = plt.subplots(figsize=(6, 4))
+
+zeta = 0.01
+label = "start (1%)"
+N_c = 1e20
+
+N_star = zeta * N_c
+t = N_star / J
+ax.plot(t, T, linewidth=2, label=label)
+    
+ax.set_ylabel(r"$T$ (K)")
+ax.set_xlabel(r"Time to $\zeta N_c$ (s)")
+
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+
+
+ax.axhline(T_s, color="C3")
+ax.text(2e-3, T_s, r"$T_s$", color="C3", backgroundcolor="w", va="center")
+
+x_data, y_data = ax.lines[0].get_data()
+idx_nose = np.argmin(x_data)
+x_nose = x_data[idx_nose]
+y_nose = y_data[idx_nose]
+
+ax.vlines(x_nose, y_nose, T_s, linestyles="dashed", color='k')
+ax.text(1.05 * x_nose, (y_nose + T_s) / 2, r"$\Delta T^*$", va="center")
+
+
+ax.hlines(y_nose, 0 , x_nose, linestyles="dashed", color='k')
+ax.text(x_nose / 2, 0.9 * y_nose, r"$\Delta t^*$", ha="center", va="top")
+
+m = (y_nose - T_s) / x_nose
+
+t2 = np.linspace(1e-4, 0.04, 300)
+y2 = T_s + m * t2
+ax.plot(t2, y2, label="Critical cooling path")
+
+ax.set_xlim(1e-5, 0.04)
+ax.set_ylim(100, 1.05*T_s)
+
+ax.legend(frameon=False)
+
+fig.tight_layout()
+fig.savefig('crit_cooling.svg')
+plt.close(fig)
+SVG('crit_cooling.svg')
+```
+

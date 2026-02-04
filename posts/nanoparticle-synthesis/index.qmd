@@ -15,3 +15,8 @@ Introduction to CNT, the LaMer model, and heterogeneous nucleation.
 Nucleation rate, diffusion, and ideal supercooling
 
 [Read Week 2](nucleation-rate/)
+
+
+## Week 3: Growth
+
+[Read Week 3](growth/)
