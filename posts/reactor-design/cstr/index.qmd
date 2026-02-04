@@ -1,0 +1,409 @@
+---
+title: Continous Stirred Tank Reactor
+jupyter:
+  jupytext:
+    formats: ipynb,py:percent
+  kernelspec:
+    display_name: Python (fai)
+    language: python
+    name: fai-notebook
+---
+
+
+A continuous stirred tank reactor (CSTR) is a type of chemical reactor that is widely used in industrial processes to produce chemicals, pharmaceuticals, and other products. In a CSTR, reactants are continuously fed into the reactor vessel, where they are mixed and allowed to react, producing the desired products.
+
+The CSTR consists of a large tank or vessel, typically made of stainless steel, which is equipped with a stirring mechanism, such as a mechanical stirrer or an agitator, that keeps the reactants in motion and ensures that they are well-mixed. The reactants are introduced into the tank through inlet ports, and the products are continuously removed through outlet ports.
+
+The key feature of a CSTR is its constant stirring, which ensures that the reactants are evenly distributed throughout the vessel and that the reaction proceeds at a uniform rate. This allows for precise control over the reaction conditions, such as temperature, pressure, and concentration, which can be adjusted by controlling the flow rates of the reactants and products.
+
+CSTRs are particularly well-suited for reactions that require high conversion rates or produce intermediate products, as the continuous mixing ensures that the reaction proceeds to completion. They are also commonly used in bioreactors for the cultivation of microorganisms, such as bacteria or yeast, which require constant stirring to ensure optimal growth and metabolic activity.
+
+Overall, CSTRs are a versatile and reliable tool for industrial processes that require continuous, high-volume production of chemicals or other products.
+
+
+![Agitated vessel with cooling jacket](https://upload.wikimedia.org/wikipedia/commons/b/be/Agitated_vessel.svg){width=50%}
+
+
+## Ideal CSTR
+To model an *ideal CSTR*, we will make the following assumptions:
+
+1. Reacting fluid is well-mixed
+2. Reactor operates isothermally
+3. Constant density throughout the reactor $\rightarrow$ constan volume $\rightarrow$ $Q_{in} = Q_{out}$
+
+### Component mole balance
+
+Rate of accumulation = Rate in - Rate out + Rate of generation
+
+$$\frac{d}{dt}(C_A V) = C_{A_F} Q - C_A Q + R_A V$$
+
+and at steady state,
+
+$$0 = C_{A_F} Q_F - C_A Q + R_A V$$
+
+#### Liquid Phase
+
+In the liquid phase, $Q$ (molar flow rate) is constant.
+
+$$C_A = C_{A_F} + R_A \frac{V}{Q}$$
+
+where $\frac{V}{Q}$ is the residence time, $\tau$.
+
+#### Gas Phase
+
+In the gas phase, $Q$ may not be constant. That is because during the reaction, the number of moles changes, which changes $x_A$, and $Q$ is a function of $x_A$.
+
+$$PV = nRT$$
+$$PQ = \dot n R T$$
+
+So the CSTR balance becomes:
+$$N_j = J_{j_f} + R_j V_R$$
+
+
+### Examples
+
+#### Problem 1
+
+Consider the liquid-phase reaction $A \rightarrow B \rightarrow C$, $r_1 = k_1 C_A$, $r_2 = k_2 C_B$. Calculate the optimum residence time that maximizes the yield of B.
+
+##### Compoment A Balance
+
+$$C_A = C_{A_F} - R_A \tau$$
+$$C_A = C_{A_F} - k_1 C_A \tau$$
+$$C_A = \frac{C_{A_F}}{1-k \tau}$$
+
+and recall that $C_A = C_{A_F} (1-x_A)$,
+
+$$C_{A_F} (1-x_A) = \frac{C_{A_F}}{1+k\tau}$$
+$$x_A = \frac{k \tau}{1+k\tau}$$
+
+##### Component B Balance
+
+$$C_B = C_{B_F} + k_1 C_A \tau - k_2 C_B \tau$$
+
+$$C_B = \frac{k_1 C_A \tau}{1+k_2 \tau} = \frac{k1 C_{A_F} \tau}{(1+k_1 \tau)(1+k_2 \tau)}$$
+
+##### Finding $\tau_{\text{opt}}$
+
+$$
+\left. \frac{dC_B}{dt} \right|_{\tau = \tau_{\text{opt}}} = 0
+$$
+
+
+```{python}
+import numpy as np
+import pandas as pd
+import altair as alt
+
+# data grid for tau
+tau_vals = np.linspace(0.0, 5.0, 501)
+df = pd.DataFrame({"tau": tau_vals})
+
+# slider params
+p_CAF = alt.param(
+    name="CAF",
+    value=2.5,
+    bind=alt.binding_range(min=0.1, max=5.0, step=0.1, name="CAF"),
+)
+
+p_k1 = alt.param(
+    name="k1",
+    value=1.0,
+    bind=alt.binding_range(min=0.01, max=5.0, step=0.01, name="k1"),
+)
+
+p_k2 = alt.param(
+    name="k2",
+    value=0.5,
+    bind=alt.binding_range(min=0.01, max=5.0, step=0.01, name="k2"),
+)
+
+# expressions
+expr_CA = "CAF / (1 + k1 * datum.tau)"
+expr_CB = "(k1 * CAF * datum.tau) / ((1 + k1 * datum.tau) * (1 + k2 * datum.tau))"
+expr_CC = f"CAF - ({expr_CA}) - ({expr_CB})"
+
+base = (
+    alt.Chart(df)
+    .add_params(p_CAF, p_k1, p_k2)
+    .transform_calculate(
+        CAF="CAF",
+        k1="k1",
+        k2="k2",
+        CA=expr_CA,
+        CB=expr_CB,
+        CC=expr_CC,
+    )
+)
+
+# long-form for lines
+lines = (
+    base.transform_fold(["CA", "CB", "CC"], as_=["species", "C"])
+    .mark_line(strokeWidth=2, clip=True)
+    .encode(
+        x=alt.X("tau:Q", title=r"Residence Time τ (hr)", scale=alt.Scale(domain=[0, 5])),
+        y=alt.Y("C:Q", title="Concentration (mol/L)", scale=alt.Scale(domain=[0, 2])),
+        color=alt.Color("species:N", title="", sort=["CA", "CB", "CC"]),
+        tooltip=[
+            alt.Tooltip("tau:Q", format=".3f"),
+            alt.Tooltip("species:N"),
+            alt.Tooltip("C:Q", format=".6f"),
+        ],
+    )
+    .properties(title="CSTR: A → B → C", width=700, height=420)
+)
+
+# find tau_opt and CB_max on the sampled grid
+max_row = (
+    base.transform_window(
+        rank="rank()",
+        sort=[alt.SortField("CB", order="descending")],
+    )
+    .transform_filter("datum.rank == 1")
+)
+
+# labels for tau_opt and CB_max
+tau_label = (
+    max_row
+    .mark_text(
+        align="left",
+        baseline="bottom",
+        dx=6,
+        dy=-4,
+        color="gray",
+        fontSize=12,
+    )
+    .encode(
+        x="tau:Q",
+        y=alt.value(0),
+        text=alt.Text("tau:Q", format=".2f"),
+    )
+)
+
+cb_label = (
+    max_row
+    .transform_calculate(
+        CB_offset = "datum.CB + 0.05"
+    )
+    .mark_text(
+        align="right",
+        baseline="middle",
+        dx=-6,
+        color="red",
+        fontSize=12,
+    )
+    .encode(
+        x=alt.value(40.0),
+        y="CB_offset:Q",
+        text=alt.Text("CB:Q", format=".2f"),
+    )
+)
+
+vline = max_row.mark_rule(strokeDash=[6, 6], color="gray").encode(x="tau:Q")
+
+hline = max_row.mark_rule(strokeDash=[2, 6], color="red").encode(y="CB:Q")
+
+point = max_row.mark_point(size=80).encode(x="tau:Q", y="CB:Q")
+
+chart = alt.layer(lines, vline, hline, tau_label, cb_label, point).configure_axis(grid=True).configure_legend(orient="top")
+chart
+```
+
+#### Problem 2
+
+The following liquid-phase reaction occurs in an **isothermal CSTR**:
+
+
+\begin{aligned}
+\text{A + B} &\rightarrow \text{D + E} \\
+\text{2D + B} &\rightarrow \text{F + G}
+\end{aligned}
+
+
+The feed stream contains:
+- $C_{A0} = 0.5 \ \text{mol/L}$
+- B is the solvent, $C_{B0} = 50 \ \text{mol/L}$
+
+Both reactions are elementary.  
+The reaction rate constants are:
+- $k_1 = 0.0043 \ \text{L/mol} \cdot \text{min}$
+- $k_2 = 0.058 \ \text{L}^2/\text{mol}^2·\text{min}$
+
+The conversion of A is 80% when the volumetric flow rate into the reactor is **7.3 L/min**.
+
+**a.** What is the volume of the reactor?  
+**b.** What is the outlet concentration of F?
+
+##### Component Balances
+
+
+\begin{aligned}
+C_A &= C_{A0} - k_1 C_A C_B \tau \\
+C_B &= C_{B0} - k_1 C_A C_B \tau - k_2 C_D^2 C_B \tau \\
+C_D &= k_1 C_A C_B \tau - 2k_2 C_D^2 C_B \tau \\
+C_F &= k_2 C_D^2 C_B \tau
+\end{aligned}
+
+```{python}
+import numpy as np
+from scipy.optimize import fsolve
+
+# given constants
+CA0 = 0.5     # mol/L
+CB0 = 50.0    # mol/L
+k1  = 0.0043  # L/mol·min
+k2  = 0.058   # L^2/mol^2·min
+
+CA_target = 0.10  # 80% conversion
+
+def balances(vars):
+    CB, CD, CF, tau = vars
+
+    eq1 = CA_target - CA0 + k1 * CA_target * CB * tau
+    eq2 = CB - CB0 + k1 * CA_target * CB * tau + k2 * CD**2 * CB * tau
+    eq3 = CD - k1 * CA_target * CB * tau + 2 * k2 * CD**2 * CB * tau
+    eq4 = CF - k2 * CD**2 * CB * tau
+
+    return [eq1, eq2, eq3, eq4]
+
+guess = [50, 0.01, 0.01, 5.0]
+
+CB, CD, CF, tau = fsolve(balances, guess)
+
+import pandas as pd
+import altair as alt
+
+taus = np.linspace(0.5, 20, 80)
+rows = []
+
+# initial guess at small tau
+x_guess = np.array([0.4, 50.0, 0.01, 0.01])
+
+for tau_i in taus:
+    def local_bal(x):
+        CA, CB, CD, CF = x
+        return [
+            CA - CA0 + k1 * CA * CB * tau_i,
+            CB - CB0 + k1 * CA * CB * tau_i + k2 * CD**2 * CB * tau_i,
+            CD - k1 * CA * CB * tau_i + 2 * k2 * CD**2 * CB * tau_i,
+            CF - k2 * CD**2 * CB * tau_i,
+        ]
+
+    sol = fsolve(local_bal, x_guess, maxfev=5000)
+
+    # enforce physical sanity
+    if np.any(sol < -1e-6):
+        raise RuntimeError(f"Nonphysical solution at tau={tau_i}")
+
+    CA, CB, CD, CF = sol
+    x_guess = sol  # <-- THIS IS THE KEY
+
+    rows.extend([
+        {"tau": tau_i, "species": "A", "C": CA},
+        {"tau": tau_i, "species": "D", "C": CD},
+        {"tau": tau_i, "species": "F", "C": CF},
+    ])
+
+df = pd.DataFrame(rows)
+alt.Chart(df).mark_line(strokeWidth=2).encode(
+    x=alt.X("tau:Q", title="Residence Time τ (min)"),
+    y=alt.Y("C:Q", title="Concentration (mol/L)"),
+    color=alt.Color("species:N", title="Species"),
+).properties(
+    width=650,
+    height=420,
+    title="CSTR Concentrations vs Residence Time"
+).configure_axis(grid=True)
+```
+
+#### Example 1 from Chemical Reaction Engineering Appendix B
+
+
+Solve the algebraic equation system, 
+
+$$y_{01}−y_1−r_1=0$$
+               
+$$y_{02}−y_2−r_2=0$$
+               
+$$y_{03}−y_3+r_1−r_2=0$$
+               
+$$y_{04}−y_4+r_2=0$$
+               
+$$y_{05}−y_5+r_1+r_2=0$$
+
+which describes a consecutive-competitive reaction, A+B→R+E, R+B→S+E, in a CSTR. The reaction kinetics is defined by 
+
+$$r_1=k_1y_1y_2x$$
+               
+$$r_2=k_2y_3y_2x$$
+               
+where $x$ denotes the residence time. The parameters $y_{01},y_{02},…, y_{05}$ as well as $k_1$ and $k_2$ have constant values. The value of the parameter $x$ (residence time) should reside in between 0 and 5.
+
+Excerpt From
+Chemical Reaction Engineering
+Tapio Salmi, Johan Wärnå, José Rafael Hernández Carucci, César A. de Araújo Filho
+This material may be protected by copyright.
+
+```{python}
+import numpy as np
+from scipy.optimize import fsolve
+import pandas as pd
+
+# inlet concentrations
+y0 = np.array([1.0, 1.0, 0.0, 0.0, 0.0])  # A, B, R, S, E
+
+# rate constants
+k1 = 5.0
+k2 = 2.0
+
+def cstr_balances(state, tau):
+    cA, cB, cR, cS, cE = state
+    c0A, c0B, c0R, c0S, c0E = y0
+
+    r1 = k1 * cA * cB * tau
+    r2 = k2 * cR * cB * tau
+
+    return [
+        (c0A - cA) - r1,          # A
+        (c0B - cB) - r1 - r2,     # B
+        (c0R - cR) + r1 - r2,     # R
+        (c0S - cS) + r2,          # S
+        (c0E - cE) + r1 + r2      # E
+    ]
+
+taus = np.linspace(0.0, 5.0, 100)
+
+rows = []
+guess = y0.copy()
+
+for tau in taus:
+    sol = fsolve(cstr_balances, guess, args=(tau,))
+    guess = sol  # continuation
+
+    labels = ["A", "B", "R", "S", "E"]
+    for lab, val in zip(labels, sol):
+        rows.append({"tau": tau, "species": lab, "C": val})
+
+df = pd.DataFrame(rows)
+
+import altair as alt
+
+alt.Chart(df).mark_line(strokeWidth=2).encode(
+    x=alt.X("tau:Q", title=r"Residence Time τ"),
+    y=alt.Y("C:Q", title="Concentration"),
+    color=alt.Color(
+        "species:N",
+        title="Species",
+        sort=["A", "B", "R", "S", "E"]
+    ),
+).properties(
+    width=700,
+    height=450,
+    title="CSTR Concentrations vs Residence Time"
+).configure_axis(
+    grid=True
+).configure_legend(
+    orient="right"
+)
+```
+
