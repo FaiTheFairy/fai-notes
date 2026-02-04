@@ -2,7 +2,7 @@
 title: Nanoparticle Synthesis
 ---
 
-This course covers the fundamental principles of nanoparticle synthesis with an emphasis on real-life application in the lab.
+This course covers the fundamental principles of nanoparticle synthesis with an emphasis on practical application in the lab.
 
 ## Week 1: Classical Nucleation Theory
 
