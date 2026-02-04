@@ -586,7 +586,7 @@ Moreover, the nucleation rate depends exponentially on the free-energy barrier, 
 
 | Quantity\\Formulation | Volumetric $\Delta g_v$ | Supercooling $\Delta T$ | Supersaturation $S$ |
 |---|:---:|:---:|:---:|
-| Free energy $\Delta G_T(r)$ | $\tfrac{4}{3} \pi r^3 \Delta g_v + 4 \pi r^2 \gamma$ | $-\dfrac{4 \pi \rho \hat{q}_f}{3 T_s} \Delta T r^3 + 4 \pi r^2 \gamma$ | $-\dfrac{k_B T}{v_m}\ln S + 4 \pi r^2 \gamma$ |
+| Free energy $\Delta G_T$ | $\tfrac{4}{3} \pi r^3 \Delta g_v + 4 \pi r^2 \gamma$ | $-\frac{4 \pi \rho \hat{q}_f}{3 T_s} \Delta T r^3 + 4 \pi r^2 \gamma$ | $-\frac{k_B T}{v_m}\ln S + 4 \pi r^2 \gamma$ |
 | Critical radius $r_c$ | $\dfrac{2\gamma}{|\Delta g_v|}$ | $\dfrac{2\gamma T_f}{\Delta h_{f,v}\,\Delta T}$ | $\dfrac{2\gamma v_m}{k_B T \ln S}$ |
 | Barrier height $\Delta G_c$ | $\dfrac{16\pi\gamma^3}{3(\Delta g_v)^2}$ | $\dfrac{16\pi\gamma^3 T_f^2}{3(\Delta h_{f,v})^2(\Delta T)^2}$ | $\dfrac{16\pi\gamma^3 v_m^2}{3 k_B^3 T^3 (\ln S)^2}$ |
 | Nucleation rate $J$ | $J_0 \exp\!\left(-\dfrac{\Delta G_c}{k_B T}\right)$ | same | same |
