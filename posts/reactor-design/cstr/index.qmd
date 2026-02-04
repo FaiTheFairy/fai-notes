@@ -4,9 +4,9 @@ jupyter:
   jupytext:
     formats: ipynb,py:percent
   kernelspec:
-    display_name: Python (fai)
+    display_name: Python 3 (ipykernel) 
     language: python
-    name: fai-notebook
+    name: python3
 ---
 
 
