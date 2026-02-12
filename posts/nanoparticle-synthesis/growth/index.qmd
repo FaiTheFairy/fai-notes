@@ -10,41 +10,39 @@ jupyter:
 ---
 
 
-The overall phase transformation not only depends on the thermodynamic driving force and kinetic barriers to nucleation, but also on the kinetics of particle growth.
+The overall phase transformation depends not only on the thermodynamic driving force and the kinetic barriers to nucleation, but also on the kinetics of growth once nuclei are present. 
 
-Considering the energetic factors in nucleation, we can draw a free energy plot showing the two phases, liquid $\alpha$ and solid $\beta$. We notice on the plot the growth driving force $\Delta G_\text{growth}$, and $Q$ representing the actavation barrier associated with diffusion.
-
-We can say that the energy barrier for $\alpha \rightarrow \beta$ is proportional to 
-
+To illustrate the energetics of growth, consider the Gibbs free energy $G$ of two phases, liquid $\alpha$ and solid $\beta$. 
+The difference in their free energies introduces a growth driving force
 $$
-\exp\!\left(-\frac{Q}{k_BT}\right)
+\Delta G_{\text{growth}} = G_{\alpha} - G_{\beta}
 $$
+defined here as a *positive* quantity when $\beta$ is the more stable phase.
+Atomic mobility, however, imposes a kinetic barrier $Q_a$ associated with diffusion and / or attachment at the interface. 
 
-However, the opposite direction, $\alpha \leftarrow \beta$, would require an energy proportional to
-
-$$
-\exp\!\left(-\frac{Q + \Delta G_\text{growth}}{k_B T}\right)
-$$
-
-These expressions should be interpreted as rate factors, not distinct activation barriers: both forward and reverse processes cross the same kinetic barrier $Q_a$, but the reverse process is additionally penalized by the thermodynamic free-energy difference between phases.
+We can visualize these on a free energy curve for $\alpha$ and $\beta$: the barrier $Q_a$ must be overcome to transform $\alpha$ to $\beta$, and the reverse process, $\beta$ to $\alpha$, requires overcoming $Q_a$ *plus* the thermodynamic penalty $\Delta G_\text{growth}$. 
 
 
 ```{python}
+#| label: fig-growth-energy-landscape
+#| fig-cap: "Schematic free-energy landscape for interfacial growth. Both directions cross the same kinetic barrier $Q_a$, but detachment ($\\beta\\to\\alpha$) is penalized by the $\\Delta G_\\text{growth}$."
+
 import numpy as np
 import matplotlib.pyplot as plt
+from IPython.display import SVG
 
 # Data: double-well free energy (schematic)
 x = np.linspace(0.0, 1.0, 1200)
 
 Q_a = 8.0
-DeltaG_v = 2.2  # positive magnitude; beta is lower by DeltaG_v
+DeltaG_growth = 2.2  # positive magnitude; beta is lower by DeltaG_growth
 
 # Double-well with barrier at x=0.5 (max=Q_a), minima at x=0 and x=1 (base=0)
 G_base = Q_a * 16.0 * x**2 * (1.0 - x)**2
 
 # Tilt so beta is more stable (right well lower):
-# at x=0: +DeltaG_v/2, at x=1: -DeltaG_v/2  => G_alpha - G_beta = DeltaG_v
-G_tilt = (DeltaG_v / 2.0) * (1.0 - 2.0 * x)
+# at x=0: +DeltaG_growth/2, at x=1: -DeltaG_growth/2  => G_alpha - G_beta = DeltaG_growth
+G_tilt = (DeltaG_growth / 2.0) * (1.0 - 2.0 * x)
 
 G = G_base + G_tilt
 
@@ -59,10 +57,6 @@ G_beta = G[-1]
 # Plot
 fig, ax = plt.subplots(figsize=(6, 4))
 
-# Background phase shading
-#ax.axvspan(0.0, 0.5, color="0.92", zorder=0)
-#ax.axvspan(0.5, 1.0, color="0.85", zorder=0)
-
 # Main curve
 ax.plot(x, G, color="0.35", zorder=3)
 
@@ -70,12 +64,8 @@ ax.plot(x, G, color="0.35", zorder=3)
 ax.hlines(G_alpha, 0.0, 1.0, colors="C0", linestyles=":", linewidth=1.6, zorder=1)
 ax.hlines(G_beta, 0.0, 1.0, colors="C1", linestyles=(0, (5, 3)), linewidth=1.6, zorder=1)
 
-# Hide default spines and ticks
-#for sp in ax.spines.values():
-#    sp.set_visible(False)
 ax.spines.top.set_visible(False)
 ax.spines.right.set_visible(False)
-#ax.set_xticks([])
 ax.set_yticks([])
 
 # Custom axes with arrows
@@ -85,16 +75,6 @@ ymax = G_bar + 1.2
 ax.set_xlim(xmin, xmax)
 ax.set_ylim(ymin, ymax)
 
-# ax.annotate(
-#     "", xy=(xmax + 0.06, ymin), xytext=(xmin - 0.02, ymin),
-#     arrowprops=dict(arrowstyle="->", color="black"),
-#     annotation_clip=False,
-# )
-# ax.annotate(
-#     "", xy=(xmin - 0.02, ymax), xytext=(xmin - 0.02, ymin),
-#     arrowprops=dict(arrowstyle="->", color="black"),
-#     annotation_clip=False,
-# )
 
 # Axis label
 ax.text(xmin - 0.09, 0.5 * (ymin + ymax), r"$G$ (Gibbs energy)",
@@ -117,14 +97,14 @@ ax.annotate("", xy=(x_bar, G_bar), xytext=(x_bar, G_alpha),
 ax.text(x_bar + 0.01, 0.5 * (G_bar + G_alpha), r"$Q_a$",
         color="red", va="center")
 
-# Delta G_v: from G_beta up to G_alpha (so it reads as a driving-force difference)
+# Delta G_growth: from G_beta up to G_alpha
 x_dgv = 0.35
 ax.annotate("", xy=(x_dgv, G_alpha), xytext=(x_dgv, G_beta),
             arrowprops=arrow_kw, zorder=5)
 ax.text(x_dgv + 0.01, 0.5 * (G_alpha + G_beta), r"$\Delta G_\text{growth}$",
         color="red", va="center")
 
-# Q_a + Delta G_v: from G_beta up to barrier (place on right half)
+# Q_a + Delta G_growth: from G_beta up to barrier (place on right half)
 x_qtot = 0.80
 ax.annotate("", xy=(x_qtot, G_bar), xytext=(x_qtot, G_beta),
             arrowprops=arrow_kw, zorder=5)
@@ -132,74 +112,43 @@ ax.text(x_qtot + 0.01, 0.5 * (G_bar + G_beta), r"$Q_a + \Delta G_\text{growth}$"
         color="red", va="center")
 
 fig.tight_layout()
-plt.show()
+plt.savefig("growth-energy-landscape.svg")
+plt.close(fig)
+SVG("growth-energy-landscape.svg")
 ```
 
-# Growth
-
-The overall phase transformation depends not only on the thermodynamic driving force and the kinetic barriers to *nucleation*, but also on the kinetics of *growth* once nuclei exist.
-
-To motivate a simple growth law, we need to consider two ideas:
-
-1. **Kinetics:** atoms or molecules must move (diffuse, rearrange, attach) to advance the interface. This mobility is commonly modeled with an Arrhenius factor
-$$
-\exp\!\left(-\frac{Q_a}{k_B T}\right),
-$$
-where $Q_a$ is an activation energy associated with atomic motion / attachment.
-
-2. **Thermodynamics:** even if atoms can move, the system must *prefer* the $\alpha \to \beta$ direction. This preference is set by the free-energy change per “growth unit.” We represent that driving force using a free-energy difference $\Delta G_\text{growth}$.
-
-A standard interface-limited picture treats growth as a competition between a forward attachment process and a reverse detachment process, both thermally activated. The net growth rate is proportional to the difference of these two fluxes:
+In rate terms, we can say that the forward (growth) rate is proportional to 
 
 $$
-\frac{\mathrm{d}r}{\mathrm{d}t}
-= n_0\left[
-\exp\!\left(-\frac{Q_a}{k_B T}\right)
--
-\exp\!\left(-\frac{Q_a + \Delta G_\text{growth}}{k_B T}\right)
-\right],
-$$
+\exp\!\left(\frac{-Q_a}{k_B T}\right),
+$$ 
 
-which may be written as
+whereas the reverse (dissolution) rate is proportional to
 
 $$
-\frac{\mathrm{d}r}{\mathrm{d}t}
-= n_0 \exp\!\left(-\frac{Q_a}{k_B T}\right)
-\left(1 - \exp\!\left(-\frac{\Delta G_\text{growth}}{k_B T}\right)\right).
-$$
+\exp\!\big(-\frac{Q_a + \Delta G_\text{growth}}{k_B T}\big).
+$$ 
 
-Here $n_0$ is a growth prefactor, $Q_a$ is the kinetic penalty for atomic motion, and $\Delta G_\text{growth}$ appears only as a *thermodynamic* between forward and reverse interfacial events.
-
-We also saw in the [nucleation-rate post](../nucleation-rate) that at low temperatures diffusion is very slow, while at higher temperatures the thermodynamic barrier to nucleation decreases rapidly. A similar competition appears in growth: at low $T$ kinetics dominate (slow mobility), while near $T_s$ the driving force is small. As a result, transformation kinetics also exhibit an "intermediate temperature" region where transformation proceeds most rapidly.
-
-## Particle growth as a two-step process
-
-We can think about growth as two resistances in series:
-
-1. **Transport:** monomers (atoms or molecules) must reach the particle surface through the solvent.
-2. **Interface reaction:** monomers must attach / rearrange at the surface to be incorporated into the solid phase.
-
-Depending on which step is slower, different growth regimes are observed: diffusion-controlled growth, interface-controlled growth, or mixed control.
-
-In diffusion-controlled growth, the rate is primarily limited by $D(T)$, so cooling quickly suppresses growth. In interface-controlled growth, transport is fast and the limiting step is attachment at the interface, often modeled with an Arrhenius factor $\exp(-Q_a/k_B T)$. Mixed control is common in practice, where both transport and attachment contribute to the overall resistance.
-
-**A solid phase in solution can dissolve or grow. For particles larger than the critical radius, which process is thermodynamically favored?**
-
-For $r > r^*$, increasing the particle size lowers the total free energy $\Delta G(r)$: the bulk term dominates over the surface term. Therefore growth is thermodynamically favored, while for $r < r^*$ dissolution reduces $\Delta G(r)$.
-
-**Why can growth be slow even when nucleation is thermodynamically favored?**
-
-Even when the driving force is large (large $|\Delta G_\text{growth}|$), growth can be suppressed if atomic mobility is low. In the simple growth law above, mobility is represented through $\exp(-Q_a/k_B T)$, which becomes very small at low $T$. Thus transformation can be thermodynamically favorable but kinetically hindered.
+Both forward and reverse processes cross the same kinetic barrier $Q_a$, but the reverse is strongly suppressed by the free-energy difference between phases.
 
 ## TTT diagram (time, temperature, and transformation)
 
-A common way to visualize transformation kinetics is a time–temperature–transformation (TTT) diagram. In a TTT plot, each curve corresponds to the time required to reach a chosen transformation threshold at each temperature.
+Classical *TTT diagrams* are built from **isothermal transformation curves**: at each temperature you measure the time to reach 1%, 50%, and 99% transformed fraction. Those curves depend on both **nucleation and growth**, typically described with JMAK/Avrami-style kinetics. [@MannaTTT; @CambridgeOverallKinetics]
 
-Here we construct a TTT-style plot using a CNT-inspired model for the nucleation rate $J(T)$. We define a reference nuclei density threshold $N_c$ and plot the time required to reach fractions $\zeta N_c$ (with $\zeta = 0.01, 0.50, 0.99$).
+Here I’m going to plot something slightly different (but still very instructive for nanoparticle synthesis): a **nucleation-incubation-time diagram**.
 
+At a fixed temperature, if the steady nucleation rate is $J(T)$ (nuclei per m$^3$ per s), then the nuclei number density grows approximately as
+
+$$
+N(t;T) \approx J(T)\,t,
+$$
+
+so the time to reach a threshold $N^*$ is $t^*(T)=N^*/J(T)$.
+
+Using a diffusion-limited CNT-style form for $J(T)$, this produces the same qualitative “C-curve / nose” behavior: at high $T$ the thermodynamic barrier dominates (slow nucleation), and at low $T$ diffusion/attachment is too slow (also slow nucleation), so there is an intermediate temperature where nucleation is fastest.
 ```{python}
-##| fig-cap = "TTT-style curve from CNT: time to reach a nuclei-density threshold vs temperature (water-like parameters)."
-##| fig-label: fig-TTT
+#| label: fig-incubation-time
+#| fig-cap: "Nucleation-incubation-time diagram from diffusion-limited CNT: time to reach a nuclei-density threshold vs temperature."
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -213,15 +162,15 @@ rho = 1.0e3         # kg/m^3
 q_s = 3.34e5        # J/kg
 Q = 3.0e-20         # J
 D_0 = 3e-9          # m^2/s
-free_path = 2.5e-10 # m
+jump_length = 2.5e-10 # m
 N_s = 1e29          # nucleation sites / m^3
 
-T_min = 100.0
-T_max = 200.0
+T_min = 90.0
+T_max = 210.0
 T = np.linspace(T_min, T_max, 400)
 dT = np.maximum(T_s - T, 1e-6)
 
-A = 2.0 * D_0 * N_s / free_path
+A = 2.0 * D_0 * N_s / (jump_length ** 2)
 B = 16.0 * np.pi * gamma**3 * T_s**2 / (3.0 * k_B * rho**2 * q_s**2 * dT**2)
 
 J = A * np.exp(-Q / (k_B * T) - B / T)
@@ -252,9 +201,9 @@ ax.legend(
 )
 
 ax.axhline(T_s, color="C3")
-ax.text(2e-2, T_s, r"$T_s$", color="C3", backgroundcolor="w", va="center")
-ax.text(2e-2, 100, "Low diffusion", color="dimgray")
-ax.text(2e-2, 200, "Low driving force", color="dimgray")
+ax.text(4e-12, T_s, r"$T_s$", color="C3", backgroundcolor="w", va="center")
+ax.text(2e-12, 100, "Low diffusion", color="dimgray")
+ax.text(2e-12, 200, "Low driving force", color="dimgray")
 
 fig.tight_layout()
 fig.savefig("TTT.svg")
@@ -262,15 +211,17 @@ plt.close(fig)
 SVG("TTT.svg")
 ```
 
-Zooming in on the start curve, we can estimate a *critical cooling path* that just avoids intersecting the transformation-start curve. If the material cools faster (more negative slope) than this path, it can pass through the transformation window without initiating transformation. A simple estimate connects $(0, T_s)$ to the nose point $(\Delta t^*, T^*)$, giving a characteristic critical cooling magnitude
+Zooming in on the start curve, we can estimate a *critical cooling path* that just avoids intersecting the transformation-start curve.
+If the material cools faster (more negative slope) than this path, it can pass through the transformation window without initiating transformation.
+A simple estimate connects $(0, T_s)$ to the nose point $(\Delta t^*, T^*)$, giving a characteristic critical cooling magnitude
 
 $$
 \left|\frac{\mathrm{d}T}{\mathrm{d}t}\right|_\text{crit} \approx \frac{\Delta T^*}{\Delta t^*}.
 $$
 
 ```{python}
-##| fig-cap = Critical cooling rate to avoid transformation depicted. Note that we are plotting time in *linear* space now instead of log space.
-##| fig-label: fig-crit-cooling
+#| fig-label: fig-crit-cooling
+#| fig-cap: "Critical cooling rate to avoid transformation depicted. Note that we are plotting time in *linear* space now instead of log space."
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -343,6 +294,171 @@ ax.legend(frameon=False)
 fig.tight_layout()
 fig.savefig('crit_cooling.svg')
 plt.close(fig)
-SVG('crit_cooling.svg')
+SVG('crit_cooling.svg') 
 ```
 
+## Diffusion vs. Interface Control
+
+Once a nucleus has formed and can grow, the growth process can be thought of as two resistances in series:[phase-trans]
+
+1. Transport through the medium: Monomers must diffuse through the liquid (or matrix) to reach the surface of the particle.
+2. Interface attachment/rearrangement: Monomers must attach at the surface and integrate into the solid lattice.
+
+Depending on which step is slower, the growth is said to be diffusion-controlled or interface-controlled (or mixed, if both contribute significantly). 
+In a diffusion-limited regime, the concentration profile in the fluid develops a steep gradient near the particle, and the interface can be assumed to be at local equilibrium with the adjacent fluid.[phase-trans]
+In contrast, an interface-controlled regime has only a small concentration gradient in the fluid (because diffusion is fast), and most of the free-energy dissipation happens in the attachment process at the interface.[phase-trans] 
+We often recognize diffusion-controlled growth by its dependence on particle size (since forming and maintaining a concentration gradient depends on $r$), whereas pure interface-controlled growth can proceed at a rate independent of size (limited by reaction kinetics).
+In practice, many systems exhibit mixed control, where both diffusion and interface kinetics play a role.
+
+:::{.callout-tip title="Analogy to electrical circuits" collapse="true"}
+The above situation is often likened to an electrical circuit with two resistors in series ￼. The total driving force (voltage) for transformation is dissipated over two resistances: one in the bulk (diffusion through the solution) and one at the interface (attachment kinetics). Whichever resistance is larger dictates the overall rate (current) of growth.
+:::
+
+## Interface-Limited Growth Kinetics
+
+Once a stable nucleus of the new phase forms, growth is often modeled as a competition between forward attachment and backward detachment of monomers (atoms or molecules) at the interface. A simple interface-limited growth law can be written by considering the difference of two thermally activated fluxes (similar to a detailed-balance argument). If $n_0$ is a prefactor related to attachment frequency and available sites, and $Q_a$ is the activation energy for attachment, then the net radial growth rate is proportional to the difference between the attachment and detachment rates:
+
+$$
+\frac{\mathrm{d}r}{\mathrm{d}t}
+= n_0 \Bigg[\exp\!\Big(-\frac{Q_a}{k_B T}\Big) \;-\; \exp\!\Big(-\frac{Q_a + \Delta G_\text{growth}}{k_B T}\Big)\Bigg].
+$$
+
+This can be refactored as 
+
+$$
+\frac{\mathrm{d}r}{\mathrm{d}t}
+= n_0 \exp\!\Big(-\frac{Q_a}{k_B T}\Big)\Bigg[1 - \exp\!\Big(-\frac{\Delta G_\text{growth}}{k_B T}\Big)\Bigg].
+$$
+
+Here the first term $\exp(-Q_a/k_B T)$ represents the Arrhenius penalty for an atom to attach to the interface (a kinetic factor), and the second term in brackets represents the thermodynamic driving force for growth (since $\Delta G_\text{growth} > 0$ makes the bracket positive). This form is the Wilson–Frenkel equation for crystal growth rate, capturing both kinetic and thermodynamic factors.[pubs-aip]
+[matter-org] 
+The solid phase will grow ($\mathrm{d}r/\mathrm{d}t>0$) so long as the solution remains supersaturated (i.e. $\Delta G_\text{growth}>0$), but the growth can be extremely slow if the temperature is low (making the Arrhenius factor very small).
+
+:::{.callout-note title="Why can growth be slow even when nucleation is thermodynamically favored?" collapse="true"}
+Because at low temperature, atomic mobility is suppressed. The driving force $\Delta G_\text{growth}$ might be large (favorable), but if atoms cannot easily cross the interface (high $Q_a$ and low $T$), the growth rate is near zero. Conversely, at temperatures close to the equilibrium $T_s$ (solidification temperature or solubility temperature), atoms move quickly but the driving force vanishes. As a result, transformation kinetics often exhibit an intermediate temperature at which the rate is maximized.
+:::
+
+This competition between thermodynamics and kinetics is analogous to what we saw with [nucleation rates].
+In fact, if we consider a range of temperatures for a fixed supersaturation, the nucleation rate typically peaks at some intermediate supercooling.[phase-trans] 
+Growth rates will show a similar behavior: at low $T$, growth is kinetically limited (slow diffusion/attachment), while near $T_s$, growth is thermodynamically limited (negligible driving force). 
+The combined effect leads to a characteristic time–temperature–transformation (TTT) diagram for overall phase change kinetics[@Callister_Rethwisch_2019]. 
+In a TTT plot, each curve represents the time required to reach a certain fraction of transformation as a function of temperature.
+The curves often exhibit a "C" shape, with a nose at the temperature of fastest transformation.
+
+## Diffusion-Limited Growth Model
+
+To quantify diffusion-limited growth, we apply Fick’s laws of diffusion. Fick’s First Law states that the diffusive flux $J$ of monomers is proportional to the concentration gradient:
+
+$$
+J = -D \,\frac{d [M]}{dx}\,
+$$
+
+where $D$ is the diffusion coefficient and $[M]$ is the concentration of monomer in solution (distance $x$ is measured outward from the particle surface). This equation implies monomers flow from regions of high concentration to low concentration. In non-ideal solutions or multicomponent systems, it is more accurate to express flux in terms of the chemical potential gradient (since non-ideal interactions affect diffusion). In that form, $J = - M \, c \, \frac{d\mu}{dx}$, where $M$ is the mobility and $c$ is concentration. This still indicates that mass transport occurs from high $\mu$ to low $\mu$, but it accounts for activity coefficients. In dilute, ideal solutions, however, the simpler concentration-gradient form is usually sufficient to describe diffusion.
+
+Fick’s Second Law extends the first law to non-steady conditions, relating the time-dependence of concentration to spatial gradients:
+
+$$
+\frac{\partial [M]}{\partial t} = D \,\frac{\partial^2 [M]}{\partial x^2}.
+$$
+
+When a solid particle is growing in solution, monomer concentration in the nearby liquid is depleted over time, and an evolving concentration profile $M$ develops around the particle. We consider a spherical particle of radius $r(t)$, growing in a liquid of bulk monomer concentration $[M]_b$. At the solid–liquid interface, the monomer concentration is $[M]_s$ (this is the concentration in the liquid right at the interface). If the particle is small, $[M]_s$ will be higher than the equilibrium concentration of a flat interface due to the Gibbs–Thomson effect (discussed below). Let $[M]_r$ denote the equilibrium monomer concentration in the liquid at a curved interface of radius $r$ (i.e. the solubility of a particle of size $r$). For growth, we will have $[M]_b > [M]_r$ (supersaturated conditions), so that $[M]_b > [M]_s > [M]_r$ in general.
+
+When a monomer from the solution is incorporated into the solid, the system’s Gibbs free energy decreases. This free energy drop is the thermodynamic driving force for growth – it is essentially $-\Delta G_\text{growth}$ per monomer incorporated. Initially, monomers very near the surface (within a diffusion length) attach readily to the nucleus due to this driving force. As they get consumed, a concentration gradient builds up in the surrounding liquid: the liquid at the interface is depleted ($[M]_s$ drops), while the bulk far away remains at $[M]_b$. This concentration gradient drives a diffusive flux of monomers toward the particle surface, sustaining growth.
+
+At the moving solid–liquid interface, a balance must hold between the diffusive flux arriving and the rate at which the interface consumes monomers (by converting them into solid). In a spherical geometry, the diffusive flux to a sphere of radius $r$ is given (from steady-state solution of Fick’s first law) by[@Crank1975]:
+
+$$
+J_{\text{diff}} = 4\pi r^2 \,(-D\,\frac{d[M]}{dr}) \;\approx\; 4 \pi r D\,\big([M]_b - [M]_s\big),
+$$
+
+where we assume the concentration far from the particle is $[M]_b$ and near the surface is $[M]_s$, and take a linear approximation of the concentration profile near the interface. Meanwhile, the consumption rate of monomers by the growing spherical surface (interface reaction rate) is:
+
+$$
+J_{\text{react}} = 4\pi r^2 \, k \,\big([M]_s - [M]_r\big),
+$$
+
+where $k$ is an interfacial attachment rate constant (having units of velocity, it can be thought of as how quickly the interface incorporates monomer from the adjacent liquid when the interface is not concentration-limited). In steady growth, these fluxes must be equal ($J_{\text{diff}} = J_{\text{react}}$), which allows us to solve for the unknown $[M]_s$ at the interface:
+
+$$
+4 \pi r D\,([M]_b - [M]_s) \;=\; 4\pi r^2 k\,([M]_s - [M]_r).
+$$
+
+Cancelling $4\pi r$ (assuming $r>0$) and rearranging gives:
+
+$$
+[M]_s \;=\; \frac{D\,[M]_b + r k\,[M]_r}{\,D + r k\,}.
+$$
+
+This result makes sense in limiting cases: if the interface attachment is infinitely fast ($k \to \infty$), then $[M]_s \to [M]_b$ (the interface concentration is the same as the bulk, i.e. no depletion layer – purely interface-controlled growth). If diffusion is extremely fast ($D \to \infty$), the same result holds ($[M]_s \approx [M]_b$). On the other hand, if diffusion is slow or the particle is large ($r k \ll D$), then $[M]_s \approx [M]_r$ (the interface is close to equilibrium with the solid – diffusion-limited growth where the interface can only advance as fast as molecules arrive).
+
+The growth rate of the particle radius can be related to the net flux of monomers into the particle. Each monomer incorporation corresponds to adding a volume $v_m$ (the molecular volume of the solid) to the particle. The relation between radial growth and flux is:
+
+$$
+J_{\text{react}} = \frac{dN}{dt} = \frac{1}{v_m}\frac{dV}{dt} = \frac{1}{v_m}\,\frac{d}{dt}\Big(\frac{4\pi r^3}{3}\Big) = \frac{4\pi r^2}{v_m}\,\frac{dr}{dt}.
+$$
+
+Setting this equal to the diffusion flux $J_{\text{diff}}$ and using the expression for $[M]_s$ above, we obtain the growth rate under combined diffusion + interface control:
+
+$$
+\frac{dr}{dt} \;=\; \frac{D\,v_m\,\big([M]_b - [M]_r\big)}{\,r + \frac{D}{k}\,}\,.
+$$
+
+This formula is known as the Mullins–Sekerka growth law in some contexts, and it smoothly interpolates between interface-controlled and diffusion-controlled behavior. If $D/(kr)$ is negligible (small particle or fast attachment), then $dr/dt \approx D v_m ([M]_b - [M]_r)/r$, which shows a $1/r$ dependence characteristic of diffusion-limited growth. If instead $D/(kr)$ is very large (slow attachment or very large $r$), then $dr/dt \approx k\,v_m([M]_b - [M]_r)$, a constant rate independent of size (interface limit).
+
+
+## Gibbs-Thomson Effect (Curvature and Solubility)
+
+Up to now we have mentioned that the equilibrium concentration at the interface $[M]_r$ depends on the particle radius $r$. This is a manifestation of the Gibbs–Thomson effect (also known as the Kelvin effect in the context of vapor–liquid equilibrium). A small particle (highly curved, positive curvature) has a higher chemical potential and higher solubility than a bulk flat surface. Quantitatively, the equilibrium monomer concentration at a spherical surface of radius $r$ is given by[@Adamson1997]:
+
+$$
+[M]r = [M]_\infty\,\exp\!\Big(\frac{2 \gamma v_m}{k_B T\,r}\Big),
+$$
+
+where $\gamma$ is the solid–liquid interfacial energy, $v_m$ is the molecular volume of the solid, and $[M]_{\infty}$ is the equilibrium monomer concentration at a flat interface (effectively, an infinitely large particle) ￼. The exponential term $\exp(2\gamma v_m/(k_B T r))$ is often written as $\exp(\frac{\text{const}}{r})$ and encapsulates the increase in solubility for small radii. In terms of chemical potential $\mu$, this relation corresponds to $\mu(r) = \mu(\infty) + \frac{2\gamma v_m}{r}$ for a spherical interface of radius $r$.
+
+This effect can be understood as a consequence of surface energy: a smaller particle has a higher surface-to-volume ratio, so removing a monomer from its surface (dissolving it) results in a relatively larger decrease in total surface energy than it would for a large flat surface. Thus, molecules are more easily lost from a small particle – meaning the particle is more soluble (less stable). Conversely, a concave surface (negative curvature, such as an indented interface or a cavity in a solid) has a lower chemical potential than a flat surface, making it more favorable for material to deposit there.
+
+In practical terms, the Gibbs–Thomson effect sets a critical radius $\bar{r}$ for growth vs dissolution in a given environment. If the bulk solution has monomer concentration $[M]_b$, we can define $\bar{r}$ by the condition $[M]_b = [M]_{\bar{r}}$. Using the formula above, this gives
+
+$$
+\bar{r} = \frac{2 \gamma v_m}{k_B T \ln([M]b/[M]_{\infty})}\,.
+$$
+
+A particle smaller than $\bar{r}$ experiences $[M]_b < [M]_r$, so the solution is undersaturated relative to that particle – it will tend to dissolve. A particle larger than $\bar{r}$ finds the solution supersaturated ($[M]_b > [M]_r$) and can continue to grow. In a system with a fixed total amount of monomer, $\bar{r}$ will increase over time as monomer is depleted from solution (since $[M]_b$ drops). Eventually, $\bar{r}$ might exceed the size of nearly all remaining particles, at which point growth effectively stops.
+
+## Ostwald Ripening (Coarsening)
+
+If nucleation has ceased and the system has a collection of particles in a solution, larger particles will grow at the expense of smaller ones.
+This phenomenon is known as *Ostwald ripening*.
+It is a direct consequence of the Gibbs–Thomson effect: small particles (high curvature) have a higher equilibrium concentration $[M]_r$ in solution, so they tend to dissolve, and their monomer material diffuses away and is captured by the larger, more stable particles.
+Over time, the average particle size increases, and the number of particles decreases, even though the total mass in the solid phase grows.
+
+A simple continuum model of Ostwald ripening can be formulated by considering the growth rate of an individual particle of radius $r$ in a population with average radius $\bar{r}$. As derived above, for diffusion-limited growth one can write:
+
+$$
+\frac{dr}{dt} = \frac{D\,v_m\,([M]_b - [M]_r)}{r}\,,
+$$
+
+and using the Gibbs–Thomson relation for $[M]_r$, one finds that $dr/dt$ is higher for larger $r$ when $[M]_b$ is fixed. In a closed system, $[M]_b$ will adjust such that there is effectively a critical radius $\bar{r}$ (which itself may be a function of time).
+A more precise result from Lifshitz–Slyozov–Wagner (LSW) theory is[@Lifshitz1961; @Wagner1961]:
+
+$$
+\frac{dr}{dt} \;=\; -\,\frac{2 D \gamma v_m c_\infty}{k_B T}\,\frac{1}{r}\Big(\frac{1}{r} - \frac{1}{\bar{r}}\Big)\,\,
+$$
+
+where $c_\infty = [M]_{\infty}$ is the solubility for a flat interface, and $\bar{r}$ is the critical radius (which plays a role analogous to $\bar{r}$ in keeping track of the average particle size).
+In a distribution where $\bar{r}$ coincides with the volume-weighted average radius, this equation means: particles smaller than $r^$ shrink (since $dr/dt < 0$ if $r < \bar{r}$) and particles larger than $\bar{r}$ grow ($dr/dt > 0$ if $r > \bar{r}$).
+The $1/r^2$ dependence indicates that growth slows down as a particle becomes very large.
+In fact, LSW theory predicts that the average radius grows with time as $r{\text{avg}}(t) \propto t^{1/3}$, meaning growth becomes ever slower over time (a cube-root law).
+The size distribution of particles approaches a self-similar shape in which the largest particle in the system is about $1.5\times$ the average size.
+Notably, no particles above roughly $1.5\,r_{\text{avg}}$ exist in the classical LSW distribution (this is the theoretical limit as $t \to \infty$).
+In reality, Ostwald ripening in finite or non-ideal systems can produce a slightly broader size distribution than the ideal LSW case, but the trend of smaller particles disappearing and larger ones growing is invariably observed.
+
+:::{.callout-tip title="Recap" icon="false"}
+Growth of a new phase can be surface-controlled or diffusion-controlled.
+In surface-controlled growth, the interface attachment is the slow step - the growth rate at constant temperature can be described by an Arrhenius factor and a driving-force term (e.g. $dr/dt = n_0 \exp(-Q_a/k_B T)\,[1 - \exp(-\Delta G_\text{growth}/k_B T)]$).
+This leads to a roughly constant growth rate (independent of particle size) when $T$ is fixed.
+In diffusion-controlled growth, the transport of monomer through the solution limits the rate - the growth rate typically decreases with increasing particle size (e.g. $dr/dt \propto 1/r$ or $1/r^2$), and growth slows down over time as the concentration field evolves.
+In nanoscale systems, growth often starts in an interface-limited regime (when particles are small and diffusion is fast) and then transitions to a diffusion-limited coarsening regime as particles become larger and monomers must travel farther through a depleted solution.
+Understanding which regime dominates is crucial for controlling the final particle size distribution in synthesis.
+:::
