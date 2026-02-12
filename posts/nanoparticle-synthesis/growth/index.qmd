@@ -140,7 +140,7 @@ Here I’m going to plot something slightly different (but still very instructiv
 At a fixed temperature, if the steady nucleation rate is $J(T)$ (nuclei per m$^3$ per s), then the nuclei number density grows approximately as
 
 $$
-N(t;T) \approx J(T)\,t,
+N(t, T) \approx J(T)\,t,
 $$
 
 so the time to reach a threshold $N^*$ is $t^*(T)=N^*/J(T)$.
@@ -330,15 +330,19 @@ $$
 = n_0 \exp\!\Big(-\frac{Q_a}{k_B T}\Big)\Bigg[1 - \exp\!\Big(-\frac{\Delta G_\text{growth}}{k_B T}\Big)\Bigg].
 $$
 
-Here the first term $\exp(-Q_a/k_B T)$ represents the Arrhenius penalty for an atom to attach to the interface (a kinetic factor), and the second term in brackets represents the thermodynamic driving force for growth (since $\Delta G_\text{growth} > 0$ makes the bracket positive). This form is the Wilson–Frenkel equation for crystal growth rate, capturing both kinetic and thermodynamic factors.[pubs-aip]
+Here the first term $\exp(-Q_a/k_B T)$ represents the Arrhenius penalty for an atom to attach to the interface (a kinetic factor), and the second term in brackets represents the thermodynamic driving force for growth (since $\Delta G_\text{growth} > 0$ makes the bracket positive).
+This form is the Wilson–Frenkel equation for crystal growth rate, capturing both kinetic and thermodynamic factors.[pubs-aip]
 [matter-org] 
 The solid phase will grow ($\mathrm{d}r/\mathrm{d}t>0$) so long as the solution remains supersaturated (i.e. $\Delta G_\text{growth}>0$), but the growth can be extremely slow if the temperature is low (making the Arrhenius factor very small).
 
 :::{.callout-note title="Why can growth be slow even when nucleation is thermodynamically favored?" collapse="true"}
-Because at low temperature, atomic mobility is suppressed. The driving force $\Delta G_\text{growth}$ might be large (favorable), but if atoms cannot easily cross the interface (high $Q_a$ and low $T$), the growth rate is near zero. Conversely, at temperatures close to the equilibrium $T_s$ (solidification temperature or solubility temperature), atoms move quickly but the driving force vanishes. As a result, transformation kinetics often exhibit an intermediate temperature at which the rate is maximized.
+Because at low temperature, atomic mobility is suppressed.
+The driving force $\Delta G_\text{growth}$ might be large (favorable), but if atoms cannot easily cross the interface (high $Q_a$ and low $T$), the growth rate is near zero.
+Conversely, at temperatures close to the equilibrium $T_s$ (solidification temperature or solubility temperature), atoms move quickly but the driving force vanishes.
+As a result, transformation kinetics often exhibit an intermediate temperature at which the rate is maximized.
 :::
 
-This competition between thermodynamics and kinetics is analogous to what we saw with [nucleation rates].
+This competition between thermodynamics and kinetics is analogous to what we saw with [nucleation rates](../nucleation-rate/#free-energy-barrier-and-supercooling).
 In fact, if we consider a range of temperatures for a fixed supersaturation, the nucleation rate typically peaks at some intermediate supercooling.[phase-trans] 
 Growth rates will show a similar behavior: at low $T$, growth is kinetically limited (slow diffusion/attachment), while near $T_s$, growth is thermodynamically limited (negligible driving force). 
 The combined effect leads to a characteristic time–temperature–transformation (TTT) diagram for overall phase change kinetics[@Callister_Rethwisch_2019]. 
@@ -353,7 +357,12 @@ $$
 J = -D \,\frac{d [M]}{dx}\,
 $$
 
-where $D$ is the diffusion coefficient and $[M]$ is the concentration of monomer in solution (distance $x$ is measured outward from the particle surface). This equation implies monomers flow from regions of high concentration to low concentration. In non-ideal solutions or multicomponent systems, it is more accurate to express flux in terms of the chemical potential gradient (since non-ideal interactions affect diffusion). In that form, $J = - M \, c \, \frac{d\mu}{dx}$, where $M$ is the mobility and $c$ is concentration. This still indicates that mass transport occurs from high $\mu$ to low $\mu$, but it accounts for activity coefficients. In dilute, ideal solutions, however, the simpler concentration-gradient form is usually sufficient to describe diffusion.
+where $D$ is the diffusion coefficient and $[M]$ is the concentration of monomer in solution (distance $x$ is measured outward from the particle surface).
+This equation implies monomers flow from regions of high concentration to low concentration.
+In non-ideal solutions or multicomponent systems, it is more accurate to express flux in terms of the chemical potential gradient (since non-ideal interactions affect diffusion).
+In that form, $J = - M \, c \, \frac{d\mu}{dx}$, where $M$ is the mobility and $c$ is concentration.
+This still indicates that mass transport occurs from high $\mu$ to low $\mu$, but it accounts for activity coefficients.
+In dilute, ideal solutions, however, the simpler concentration-gradient form is usually sufficient to describe diffusion.
 
 Fick’s Second Law extends the first law to non-steady conditions, relating the time-dependence of concentration to spatial gradients:
 
@@ -361,11 +370,20 @@ $$
 \frac{\partial [M]}{\partial t} = D \,\frac{\partial^2 [M]}{\partial x^2}.
 $$
 
-When a solid particle is growing in solution, monomer concentration in the nearby liquid is depleted over time, and an evolving concentration profile $M$ develops around the particle. We consider a spherical particle of radius $r(t)$, growing in a liquid of bulk monomer concentration $[M]_b$. At the solid–liquid interface, the monomer concentration is $[M]_s$ (this is the concentration in the liquid right at the interface). If the particle is small, $[M]_s$ will be higher than the equilibrium concentration of a flat interface due to the Gibbs–Thomson effect (discussed below). Let $[M]_r$ denote the equilibrium monomer concentration in the liquid at a curved interface of radius $r$ (i.e. the solubility of a particle of size $r$). For growth, we will have $[M]_b > [M]_r$ (supersaturated conditions), so that $[M]_b > [M]_s > [M]_r$ in general.
+When a solid particle is growing in solution, monomer concentration in the nearby liquid is depleted over time, and an evolving concentration profile $M$ develops around the particle.
+We consider a spherical particle of radius $r(t)$, growing in a liquid of bulk monomer concentration $[M]_b$.
+At the solid–liquid interface, the monomer concentration is $[M]_s$ (this is the concentration in the liquid right at the interface).
+If the particle is small, $[M]_s$ will be higher than the equilibrium concentration of a flat interface due to the Gibbs–Thomson effect (discussed below).
+Let $[M]_r$ denote the equilibrium monomer concentration in the liquid at a curved interface of radius $r$ (i.e. the solubility of a particle of size $r$).
+For growth, we will have $[M]_b > [M]_r$ (supersaturated conditions), so that $[M]_b > [M]_s > [M]_r$ in general.
 
-When a monomer from the solution is incorporated into the solid, the system’s Gibbs free energy decreases. This free energy drop is the thermodynamic driving force for growth – it is essentially $-\Delta G_\text{growth}$ per monomer incorporated. Initially, monomers very near the surface (within a diffusion length) attach readily to the nucleus due to this driving force. As they get consumed, a concentration gradient builds up in the surrounding liquid: the liquid at the interface is depleted ($[M]_s$ drops), while the bulk far away remains at $[M]_b$. This concentration gradient drives a diffusive flux of monomers toward the particle surface, sustaining growth.
+When a monomer from the solution is incorporated into the solid, the system’s Gibbs free energy decreases.
+This free energy drop is the thermodynamic driving force for growth (it is essentially $-\Delta G_\text{growth}$ per monomer incorporated).
+Initially, monomers very near the surface (within a diffusion length) attach readily to the nucleus due to this driving force.
+As they get consumed, a concentration gradient builds up in the surrounding liquid: the liquid at the interface is depleted ($[M]_s$ drops), while the bulk far away remains at $[M]_b$. This concentration gradient drives a diffusive flux of monomers toward the particle surface, sustaining growth.
 
-At the moving solid–liquid interface, a balance must hold between the diffusive flux arriving and the rate at which the interface consumes monomers (by converting them into solid). In a spherical geometry, the diffusive flux to a sphere of radius $r$ is given (from steady-state solution of Fick’s first law) by[@Crank1975]:
+At the moving solid–liquid interface, a balance must hold between the diffusive flux arriving and the rate at which the interface consumes monomers (by converting them into solid).
+In a spherical geometry, the diffusive flux to a sphere of radius $r$ is given (from steady-state solution of Fick’s first law) by[@Crank1975]:
 
 $$
 J_{\text{diff}} = 4\pi r^2 \,(-D\,\frac{d[M]}{dr}) \;\approx\; 4 \pi r D\,\big([M]_b - [M]_s\big),
@@ -389,9 +407,13 @@ $$
 [M]_s \;=\; \frac{D\,[M]_b + r k\,[M]_r}{\,D + r k\,}.
 $$
 
-This result makes sense in limiting cases: if the interface attachment is infinitely fast ($k \to \infty$), then $[M]_s \to [M]_b$ (the interface concentration is the same as the bulk, i.e. no depletion layer – purely interface-controlled growth). If diffusion is extremely fast ($D \to \infty$), the same result holds ($[M]_s \approx [M]_b$). On the other hand, if diffusion is slow or the particle is large ($r k \ll D$), then $[M]_s \approx [M]_r$ (the interface is close to equilibrium with the solid – diffusion-limited growth where the interface can only advance as fast as molecules arrive).
+This result makes sense in limiting cases: if the interface attachment is infinitely fast ($k \to \infty$), then $[M]_s \to [M]_b$ (the interface concentration is the same as the bulk, i.e. no depletion layer; purely interface-controlled growth).
+If diffusion is extremely fast ($D \to \infty$), the same result holds ($[M]_s \approx [M]_b$).
+On the other hand, if diffusion is slow or the particle is large ($r k \ll D$), then $[M]_s \approx [M]_r$ (the interface is close to equilibrium with the solid; diffusion-limited growth where the interface can only advance as fast as molecules arrive).
 
-The growth rate of the particle radius can be related to the net flux of monomers into the particle. Each monomer incorporation corresponds to adding a volume $v_m$ (the molecular volume of the solid) to the particle. The relation between radial growth and flux is:
+The growth rate of the particle radius can be related to the net flux of monomers into the particle.
+Each monomer incorporation corresponds to adding a volume $v_m$ (the molecular volume of the solid) to the particle.
+The relation between radial growth and flux is:
 
 $$
 J_{\text{react}} = \frac{dN}{dt} = \frac{1}{v_m}\frac{dV}{dt} = \frac{1}{v_m}\,\frac{d}{dt}\Big(\frac{4\pi r^3}{3}\Big) = \frac{4\pi r^2}{v_m}\,\frac{dr}{dt}.
@@ -403,37 +425,52 @@ $$
 \frac{dr}{dt} \;=\; \frac{D\,v_m\,\big([M]_b - [M]_r\big)}{\,r + \frac{D}{k}\,}\,.
 $$
 
-This formula is known as the Mullins–Sekerka growth law in some contexts, and it smoothly interpolates between interface-controlled and diffusion-controlled behavior. If $D/(kr)$ is negligible (small particle or fast attachment), then $dr/dt \approx D v_m ([M]_b - [M]_r)/r$, which shows a $1/r$ dependence characteristic of diffusion-limited growth. If instead $D/(kr)$ is very large (slow attachment or very large $r$), then $dr/dt \approx k\,v_m([M]_b - [M]_r)$, a constant rate independent of size (interface limit).
+This formula interpolates between interface-controlled and diffusion-controlled behavior.
+If $D/(kr)$ is negligible (small particle or fast attachment), then $dr/dt \approx D v_m ([M]_b - [M]_r)/r$, which shows a $1/r$ dependence characteristic of diffusion-limited growth.
+If instead $D/(kr)$ is very large (slow attachment or very large $r$), then $dr/dt \approx k\,v_m([M]_b - [M]_r)$, a constant rate independent of size (interface limit).
 
 
 ## Gibbs-Thomson Effect (Curvature and Solubility)
 
-Up to now we have mentioned that the equilibrium concentration at the interface $[M]_r$ depends on the particle radius $r$. This is a manifestation of the Gibbs–Thomson effect (also known as the Kelvin effect in the context of vapor–liquid equilibrium). A small particle (highly curved, positive curvature) has a higher chemical potential and higher solubility than a bulk flat surface. Quantitatively, the equilibrium monomer concentration at a spherical surface of radius $r$ is given by[@Adamson1997]:
+Up to now we have mentioned that the equilibrium concentration at the interface $[M]_r$ depends on the particle radius $r$.
+This is a manifestation of the [Gibbs–Thomson effect](https://en.wikipedia.org/wiki/Gibbs–Thomson_equation).
+A small particle (highly curved, positive curvature) has a higher chemical potential and higher solubility than a bulk flat surface.
+Quantitatively, the equilibrium monomer concentration at a spherical surface of radius $r$ is given by[@Adamson1997]:
 
 $$
 [M]r = [M]_\infty\,\exp\!\Big(\frac{2 \gamma v_m}{k_B T\,r}\Big),
 $$
 
-where $\gamma$ is the solid–liquid interfacial energy, $v_m$ is the molecular volume of the solid, and $[M]_{\infty}$ is the equilibrium monomer concentration at a flat interface (effectively, an infinitely large particle) ￼. The exponential term $\exp(2\gamma v_m/(k_B T r))$ is often written as $\exp(\frac{\text{const}}{r})$ and encapsulates the increase in solubility for small radii. In terms of chemical potential $\mu$, this relation corresponds to $\mu(r) = \mu(\infty) + \frac{2\gamma v_m}{r}$ for a spherical interface of radius $r$.
+where $\gamma$ is the solid–liquid interfacial energy, $v_m$ is the molecular volume of the solid, and $[M]_{\infty}$ is the equilibrium monomer concentration at a flat interface (effectively, an infinitely large particle).
+The exponential term $\exp(2\gamma v_m/(k_B T r))$ is often written as $\exp(\frac{\text{const}}{r})$ and encapsulates the increase in solubility for small radii.
+In terms of chemical potential $\mu$, this relation corresponds to $\mu(r) = \mu(\infty) + \frac{2\gamma v_m}{r}$ for a spherical interface of radius $r$.
 
-This effect can be understood as a consequence of surface energy: a smaller particle has a higher surface-to-volume ratio, so removing a monomer from its surface (dissolving it) results in a relatively larger decrease in total surface energy than it would for a large flat surface. Thus, molecules are more easily lost from a small particle – meaning the particle is more soluble (less stable). Conversely, a concave surface (negative curvature, such as an indented interface or a cavity in a solid) has a lower chemical potential than a flat surface, making it more favorable for material to deposit there.
+This effect can be understood as a consequence of surface energy: a smaller particle has a higher surface-to-volume ratio, so removing a monomer from its surface (dissolving it) results in a relatively larger decrease in total surface energy than it would for a large flat surface.
+Thus, molecules are more easily lost from a small particle; meaning the particle is more soluble (less stable).
+Conversely, a concave surface (negative curvature, such as an indented interface or a cavity in a solid) has a lower chemical potential than a flat surface, making it more favorable for material to deposit there.
 
-In practical terms, the Gibbs–Thomson effect sets a critical radius $\bar{r}$ for growth vs dissolution in a given environment. If the bulk solution has monomer concentration $[M]_b$, we can define $\bar{r}$ by the condition $[M]_b = [M]_{\bar{r}}$. Using the formula above, this gives
+In practical terms, the Gibbs–Thomson effect sets a critical radius $\bar{r}$ for growth vs dissolution in a given environment.
+If the bulk solution has monomer concentration $[M]_b$, we can define $\bar{r}$ by the condition $[M]_b = [M]_{\bar{r}}$. Using the formula above, this gives
 
 $$
 \bar{r} = \frac{2 \gamma v_m}{k_B T \ln([M]b/[M]_{\infty})}\,.
 $$
 
-A particle smaller than $\bar{r}$ experiences $[M]_b < [M]_r$, so the solution is undersaturated relative to that particle – it will tend to dissolve. A particle larger than $\bar{r}$ finds the solution supersaturated ($[M]_b > [M]_r$) and can continue to grow. In a system with a fixed total amount of monomer, $\bar{r}$ will increase over time as monomer is depleted from solution (since $[M]_b$ drops). Eventually, $\bar{r}$ might exceed the size of nearly all remaining particles, at which point growth effectively stops.
+A particle smaller than $\bar{r}$ experiences $[M]_b < [M]_r$, so the solution is undersaturated relative to that particle (it will tend to dissolve).
+A particle larger than $\bar{r}$ finds the solution supersaturated ($[M]_b > [M]_r$) and can continue to grow.
+In a system with a fixed total amount of monomer, $\bar{r}$ will increase over time as monomer is depleted from solution (since $[M]_b$ drops).
+Eventually, $\bar{r}$ might exceed the size of nearly all remaining particles, at which point growth effectively stops.
+
 
 ## Ostwald Ripening (Coarsening)
 
 If nucleation has ceased and the system has a collection of particles in a solution, larger particles will grow at the expense of smaller ones.
-This phenomenon is known as *Ostwald ripening*.
+This phenomenon is known as [Ostwald ripening](https://en.wikipedia.org/wiki/Ostwald_ripening).
 It is a direct consequence of the Gibbs–Thomson effect: small particles (high curvature) have a higher equilibrium concentration $[M]_r$ in solution, so they tend to dissolve, and their monomer material diffuses away and is captured by the larger, more stable particles.
 Over time, the average particle size increases, and the number of particles decreases, even though the total mass in the solid phase grows.
 
-A simple continuum model of Ostwald ripening can be formulated by considering the growth rate of an individual particle of radius $r$ in a population with average radius $\bar{r}$. As derived above, for diffusion-limited growth one can write:
+A simple model of Ostwald ripening can be formulated by considering the growth rate of an individual particle of radius $r$ in a population with average radius $\bar{r}$.
+As derived above, for diffusion-limited growth one can write:
 
 $$
 \frac{dr}{dt} = \frac{D\,v_m\,([M]_b - [M]_r)}{r}\,,
@@ -447,10 +484,10 @@ $$
 $$
 
 where $c_\infty = [M]_{\infty}$ is the solubility for a flat interface, and $\bar{r}$ is the critical radius (which plays a role analogous to $\bar{r}$ in keeping track of the average particle size).
-In a distribution where $\bar{r}$ coincides with the volume-weighted average radius, this equation means: particles smaller than $r^$ shrink (since $dr/dt < 0$ if $r < \bar{r}$) and particles larger than $\bar{r}$ grow ($dr/dt > 0$ if $r > \bar{r}$).
-The $1/r^2$ dependence indicates that growth slows down as a particle becomes very large.
-In fact, LSW theory predicts that the average radius grows with time as $r{\text{avg}}(t) \propto t^{1/3}$, meaning growth becomes ever slower over time (a cube-root law).
-The size distribution of particles approaches a self-similar shape in which the largest particle in the system is about $1.5\times$ the average size.
+In a distribution where $\bar{r}$ coincides with the volume-weighted average radius, this equation means: particles smaller than $\bar{r}$ shrink (since $dr/dt < 0$ if $r < \bar{r}$) and particles larger than $\bar{r}$ grow ($dr/dt > 0$ if $r > \bar{r}$).
+<!-- The $1/r^2$ dependence indicates that growth slows down as a particle becomes very large. -->
+<!-- In fact, LSW theory predicts that the average radius grows with time as $r{\text{avg}}(t) \propto t^{1/3}$, meaning growth becomes ever slower over time (a cube-root law). -->
+<!-- The size distribution of particles approaches a self-similar shape in which the largest particle in the system is about $1.5\times$ the average size. -->
 Notably, no particles above roughly $1.5\,r_{\text{avg}}$ exist in the classical LSW distribution (this is the theoretical limit as $t \to \infty$).
 In reality, Ostwald ripening in finite or non-ideal systems can produce a slightly broader size distribution than the ideal LSW case, but the trend of smaller particles disappearing and larger ones growing is invariably observed.
 
@@ -458,7 +495,7 @@ In reality, Ostwald ripening in finite or non-ideal systems can produce a slight
 Growth of a new phase can be surface-controlled or diffusion-controlled.
 In surface-controlled growth, the interface attachment is the slow step - the growth rate at constant temperature can be described by an Arrhenius factor and a driving-force term (e.g. $dr/dt = n_0 \exp(-Q_a/k_B T)\,[1 - \exp(-\Delta G_\text{growth}/k_B T)]$).
 This leads to a roughly constant growth rate (independent of particle size) when $T$ is fixed.
-In diffusion-controlled growth, the transport of monomer through the solution limits the rate - the growth rate typically decreases with increasing particle size (e.g. $dr/dt \propto 1/r$ or $1/r^2$), and growth slows down over time as the concentration field evolves.
+In diffusion-controlled growth, the transport of monomer through the solution limits the rate; the growth rate typically decreases with increasing particle size, and growth slows down over time as the concentration field evolves.
 In nanoscale systems, growth often starts in an interface-limited regime (when particles are small and diffusion is fast) and then transitions to a diffusion-limited coarsening regime as particles become larger and monomers must travel farther through a depleted solution.
 Understanding which regime dominates is crucial for controlling the final particle size distribution in synthesis.
 :::
